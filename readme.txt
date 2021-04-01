@@ -10,7 +10,8 @@ cd REPOS
 git clone -b master https://github.com/astrion/Concordia_COMP5541_Winter2021.git
 cd Concordia_COMP5541_Winter2021
 
-# check
+# get the latest branch info and check branches
+git fetch
 git branch
 git branch -a
 git status
