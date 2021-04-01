@@ -19,6 +19,8 @@ git status
 # create a new branch
 git branch my_branch
 git checkout my_branch
+
+# the below is a sum of the two commands above
 git checkout -b poc_YourInitials
 
 # set local branch to pull upstream from local master
@@ -32,7 +34,7 @@ git status
 # commit your changes
 git add src/file1
 git add src/file2
-git commit -m "#: update"
+git commit -m "#: update of file1 and file2 for adding X feature"
 git status
 
 # push
