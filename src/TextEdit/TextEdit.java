@@ -245,6 +245,10 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                     steps = 0;
                 }
                 this.sequentialSmartUndoManager.undoMultipleNToLastEdits(steps);
+
+                // update view
+                updateLastEditView(this.sequentialSmartUndoManager.lastEdits);
+
                 break;
 
             case APPLY_MULTIPLE_SEQUENTIAL_UNDO_BY_ELAPSED_TIME:
@@ -263,6 +267,10 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                 }
                 int expectedSteps = this.sequentialSmartUndoManager.getStepsToUndoInLatestSeconds(seconds);
                 this.sequentialSmartUndoManager.undoMultipleNToLastEdits(expectedSteps);
+
+                // update view
+                updateLastEditView(this.sequentialSmartUndoManager.lastEdits);
+
                 break;
 
             case APPLY_MULTIPLE_ANY_ORDER_UNDO:
