@@ -121,6 +121,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                         // update next
                         next = area.getText();
                         sequentialSmartUndoManager.addEdit(edit, prev, next );
+                        updateLastEditView(sequentialSmartUndoManager.lastEdits);
 
                         // update prev
                         prev = next;
@@ -227,7 +228,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
 
             case VIEW_EDITS:
 
-                displayLastEdits(this.sequentialSmartUndoManager.lastEdits);
+                updateLastEditView(this.sequentialSmartUndoManager.lastEdits, true);
                 break;
 
             case APPLY_MULTIPLE_SEQUENTIAL_UNDO_BY_N_STEPS:
@@ -283,6 +284,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                 throw new IllegalStateException("Unexpected value: " + ae);
         }
     }
+
 
 }
 
