@@ -43,7 +43,6 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(area);
         frame.setSize(640, 480);
-        frame.setVisible(true);
 
         // Build the menu
         JMenuBar menu_main = new JMenuBar();
@@ -109,6 +108,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         menu_help.add(menuitem_about);
 
         frame.setJMenuBar(menu_main);
+        frame.setVisible(true);
 
         area.getDocument().addUndoableEditListener(
                 new UndoableEditListener() {
