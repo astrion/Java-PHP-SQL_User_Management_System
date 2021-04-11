@@ -9,7 +9,6 @@ import java.util.Stack;
 public interface SecondaryUIComponents {
 
     // static methods
-
     static JTable getLastEditTable(Stack dataStack) {
 
         // set column names
@@ -18,12 +17,13 @@ public interface SecondaryUIComponents {
                 "Timestamp",
                 "HashCode",
                 "EditType",
-                "Difference"
+                "Difference",
+                "Set"
         };
 
         // set rows
         int rowCount = dataStack == null ? 0 : dataStack.size();
-        Object[][] dataArray = new String[rowCount][colNames.length];
+        Object[][] dataArray = new Object[rowCount][colNames.length];
         LastEdit lastEdit;
         for (int i = 0; i < rowCount; i++){
             lastEdit = (LastEdit) dataStack.get(i);
@@ -32,9 +32,20 @@ public interface SecondaryUIComponents {
             dataArray[i][2] = "" + lastEdit.edit.hashCode();
             dataArray[i][3] = lastEdit.edit.getPresentationName();
             dataArray[i][4] = lastEdit.difference;
+            dataArray[i][5] = false;
         }
 
-        return new JTable(dataArray, colNames);
+        return new JTable(dataArray, colNames){
+            @Override
+            public Class<?> getColumnClass(int column) {
+                switch (column) {
+                    case 5:
+                        return Boolean.class;
+                    default:
+                        return String.class;
+                }
+            }
+        };
     }
 
     static JFrame getLastEditView() {

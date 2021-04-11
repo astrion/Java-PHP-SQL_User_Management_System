@@ -40,6 +40,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
 
         // Set attributes of the app window
         area = new JTextArea();
+        area.setLineWrap(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.add(area);
         frame.setSize(640, 480);
