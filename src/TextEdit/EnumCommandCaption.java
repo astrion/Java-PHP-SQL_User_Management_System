@@ -14,15 +14,15 @@ enum EnumCommandCaption {
     QUIT ("Quit"),
 
     EDIT ("Edit"),
-    UNDO ("Undo"),
+    CLEAR_LAST_EDIT_HISTORY("Clear last-edit history..."),
+    CLEAR_LAST_EDIT_HISTORY_BY_N_STEPS("Clear last-edit history by N steps..."),
+    CLEAR_LAST_EDIT_HISTORY_BY_ELAPSED_TIME("Clear last-edit history by elapsed time..."),
     REDO ("Redo"),
-    SMART_UNDO ("Smart undo..."),
-
-    POC ("POC"),
-    VIEW_EDITS ("View last edits..."),
-    APPLY_MULTIPLE_SEQUENTIAL_UNDO_BY_N_STEPS ("Apply smart undo of last edits by steps..."),
-    APPLY_MULTIPLE_SEQUENTIAL_UNDO_BY_ELAPSED_TIME ("Apply smart undo of last edits by elapsed time..."),
-    APPLY_MULTIPLE_ANY_ORDER_UNDO ("Apply smart undo of last edits by any order..."),
+    UNDO ("Undo"),
+    UNDO_SEQUENTIALLY_BY_N_STEPS("Undo last edits sequentially by N steps..."),
+    UNDO_SEQUENTIALLY_BY_ELAPSED_TIME("Undo last edits sequentially by elapsed time..."),
+    UNDO_BY_ANY_ORDER("Undo last edits by any order..."),
+    VIEW_LAST_EDIT_HISTORY("View last-edit history..."),
 
     HELP ("Help"),
     ABOUT ("About");
