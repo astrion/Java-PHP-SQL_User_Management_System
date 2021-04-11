@@ -22,7 +22,7 @@ enum EnumCommandCaption {
     UNDO_SEQUENTIALLY_BY_N_STEPS("Undo last edits sequentially by N steps..."),
     UNDO_SEQUENTIALLY_BY_ELAPSED_TIME("Undo last edits sequentially by elapsed time..."),
     UNDO_BY_ANY_ORDER("Undo last edits by any order..."),
-    VIEW_LAST_EDIT_HISTORY("View last-edit history..."),
+    VIEW_HIDE_LAST_EDIT_HISTORY("View/Hide last-edit history..."),
 
     HELP ("Help"),
     ABOUT ("About");

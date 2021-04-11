@@ -95,4 +95,14 @@ public interface SecondaryUIComponents {
         lastEditView.setVisible(isVisible);
     }
 
+    default String[] columnNames(){
+        return new String[]{
+                "#",
+                "Timestamp",
+                "HashCode",
+                "EditType",
+                "Difference",
+                "Set"
+        };
+    };
 }
