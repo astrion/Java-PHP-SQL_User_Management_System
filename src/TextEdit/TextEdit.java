@@ -4,25 +4,30 @@ import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileSystemView;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.undo.UndoableEdit;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 public final class TextEdit extends JFrame implements ActionListener, TextProcessing, SecondaryUIComponents {
     private static JTextArea area;
     private static JTable table;
     private static JFrame frame;
-    private static JScrollPane tableScrollPane;
+    private static JScrollPane undoTableScrollPane;
+    private static JPanel undoManagementPanel;
+    private static JScrollPane forgetTableScrollPane;
+    private static JPanel forgetManagementPanel;
+    private static JPanel undoButtonPanel;
+    private static JPanel forgetButtonPanel;
     private static JPanel gridPanel;
+    private static JTabbedPane undoForgetTabbedPane;
     private static Boolean tableExist = false;
+    private static TextEditTable undoTable;
+    private static TextEditTable forgetTable;
 
     private static int returnValue = 0;
     private final String DEFAULT_TEXT = "";
@@ -51,17 +56,8 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         area.setLineWrap(true);
 
         // The DefultTableModel supports addRow method to update its contents
-        table = new JTable(new DefaultTableModel(new Object[][]{}, columnNames())) {
-            @Override
-            public Class<?> getColumnClass(int column) {
-                switch (column) {
-                    case 5:
-                        return Boolean.class;
-                    default:
-                        return String.class;
-                }
-            }
-        };
+        undoTable = new TextEditTable(new Object[][]{});
+        forgetTable = new TextEditTable(new Object[][]{});
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -70,12 +66,28 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
 
         // Put text area into scroll pane to enable scrolling feature
         JScrollPane textScrollPane = new JScrollPane(area);
-        tableScrollPane = new JScrollPane(table);
+        undoTableScrollPane = new JScrollPane(undoTable);
+        undoButtonPanel = new JPanel();
+        undoButtonPanel.add(new JButton("Undo Items"));
+        forgetTableScrollPane = new JScrollPane(forgetTable);
+        forgetButtonPanel = new JPanel();
+        forgetButtonPanel.add(new JButton("Forget Items"));
+
+        undoManagementPanel = new JPanel(new GridLayout(2, 1));
+        undoManagementPanel.add(undoTableScrollPane);
+        undoManagementPanel.add(undoButtonPanel);
+        forgetManagementPanel = new JPanel(new GridLayout(2, 1));
+        forgetManagementPanel.add(forgetTableScrollPane);
+        forgetManagementPanel.add(forgetButtonPanel);
+        undoForgetTabbedPane = new JTabbedPane();
+        undoForgetTabbedPane.addTab("Undo", undoManagementPanel);
+        undoForgetTabbedPane.addTab("Forget",forgetManagementPanel);
 
         // Set GridPanel and add Text Scroll Pane into left, and Table Scroll Pane into right
         gridPanel = new JPanel(new GridLayout(1, 2));
         frame.setContentPane(gridPanel);
         gridPanel.add(textScrollPane);
+
 
         // Build the menu
         JMenuBar menu_main = new JMenuBar();
@@ -149,24 +161,12 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                     public void undoableEditHappened(UndoableEditEvent e) {
                         UndoableEdit edit = e.getEdit();
 
-                        //undoManager.addEdit(edit);
-
                         // update next
                         next = area.getText();
                         smartUndoManager.addEdit(edit, prev, next );
-                        // Assign along with a type casting from JTable Model to DefaultTable Model
-                        DefaultTableModel model = (DefaultTableModel) table.getModel();
-                        Object[] columns = new Object[columnNames().length];
 
-                        LastEdit lastEdit = smartUndoManager.lastEdits.peek();
-                        columns[0] = "" + (smartUndoManager.lastEdits.size() - 1);
-                        columns[1] = lastEdit.dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                        columns[2] = "" + lastEdit.edit.hashCode();
-                        columns[3] = lastEdit.edit.getPresentationName();
-                        columns[4] = lastEdit.difference;
-                        columns[5] = false;
-
-                        model.insertRow(0, columns);
+                        undoTable.insertRow(smartUndoManager.lastEdits.peek());
+                        forgetTable.addRow(smartUndoManager.lastEdits.peek());
 
                         // update prev
                         prev = next;
@@ -357,9 +357,11 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
 
             case VIEW_HIDE_LAST_EDIT_HISTORY:
                 if (tableExist){
-                    gridPanel.remove(tableScrollPane);
+//                    gridPanel.remove(tableScrollPane);
+                    gridPanel.remove(undoForgetTabbedPane);
                 } else {
-                    gridPanel.add(tableScrollPane);
+//                    gridPanel.add(tableScrollPane);
+                    gridPanel.add(undoForgetTabbedPane);
                 }
                 tableExist = !tableExist;
                 frame.setVisible(true);
@@ -377,5 +379,4 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
 
 
 }
-
 
