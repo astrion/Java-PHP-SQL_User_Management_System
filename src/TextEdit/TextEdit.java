@@ -172,6 +172,9 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                     @Override
                     public void undoableEditHappened(UndoableEditEvent e) {
                         edit = e.getEdit();
+                        // accumulate editable events
+                        smartUndoManager.undoManager.undoableEditHappened(e);
+
                         // update next
                         next = area.getText();
                         lastEditTime = LocalDateTime.now();
@@ -189,6 +192,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
             }
             LocalDateTime now = LocalDateTime.now();
             if (ChronoUnit.MILLIS.between(lastEditTime, now ) > 2000) {
+
                     smartUndoManager.addEdit(edit, prev, next);
                     undoTable.insertRow(smartUndoManager.lastEdits.peek());
                     forgetTable.addRow(smartUndoManager.lastEdits.peek());
@@ -382,10 +386,8 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
 
             case VIEW_HIDE_LAST_EDIT_HISTORY:
                 if (tableExist) {
-//                    gridPanel.remove(tableScrollPane);
                     gridPanel.remove(undoForgetTabbedPane);
                 } else {
-//                    gridPanel.add(tableScrollPane);
                     gridPanel.add(undoForgetTabbedPane);
                 }
                 tableExist = !tableExist;

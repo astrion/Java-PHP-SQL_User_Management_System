@@ -47,7 +47,7 @@ public class SmartUndoManager implements TextProcessing {
     public void addEdit(UndoableEdit edit, String prev, String next) {
         LastEdit lastEdit = new LastEdit(edit, prev, next);
         this.lastEdits.push(lastEdit);  // add LastEdit instances to track edit details
-        this.undoManager.addEdit(lastEdit.edit);  // let the undoManager handle
+        this.undoManager.end(); // finish the last character input
         System.out.println("ADD EDIT ->" + lastEdit.toString());
     }
 
