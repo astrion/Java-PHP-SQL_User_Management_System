@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-enum EnumCommandCaption {
+public enum EnumCommandCaption {
 
     FILE ("File"),
     NEW ("New"),
