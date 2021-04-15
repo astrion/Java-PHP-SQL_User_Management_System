@@ -18,7 +18,8 @@ public class keyListner {
         newLineVector.add(-10);
         //newLineVector.add(-9);
         Vector<paraStorage> paraStor = new Vector();
-        paraStor.add(new paraStorage(1));
+        paraStor.add(new paraStorage(1));  // adds the 1st paragraph to the vector
+        paraStor.get(0).setSize(1);
 
         area.addKeyListener(new KeyListener() {
             @Override
@@ -39,13 +40,18 @@ public class keyListner {
 
                         //System.out.println("caret " + caret + " --  lastEntry " + newLineVector.get(newLineVector.size()-1));
                         if (nlvLessOne == caretLessOne){
-                            System.out.println("stack " + nlvLessOne + "2 eneters in a row");
+                            System.out.println("stack " + nlvLessOne + "multiple Enters in a row");
 
                         }
                         else {
                             paraStor.add(new paraStorage(id));
-                            paraStor.get(id-1).setStart(caret);
-                            paraStor.get(id-2).setSize(caret-paraStor.get(id-2).getStart());
+                            paraStor.get(id-1).setStart(caret); //id-1 = current para, because 0 base index
+                            paraStor.get(id-1).setSize(1); //temp size
+                            paraStor.get(id-2).setSize(caret - paraStor.get(id-2).getStart());
+                            if (id==2) {
+                                paraStor.get(id-2).setSize((caret+1) - paraStor.get(id-2).getStart());
+                            }
+
 
                             System.out.println("previous para: id " + paraStor.get(id-2).getID() + " | start " + paraStor.get(id-2).getStart() +" | size " + paraStor.get(id-2).getSize());
                             System.out.println("new para: id " + paraStor.get(id-1).getID() + " | start " + paraStor.get(id-1).getStart() +" | size " + paraStor.get(id-1).getSize());
@@ -54,7 +60,7 @@ public class keyListner {
                         break;
 
                     case 8:
-                        for (int i = paraStor.size(); i > 1 ; i--) {
+                        for (int i = paraStor.size(); i > 0 ; i--) {
                             if (caret > paraStor.get(i-1).getStart()){
                                 paraStor.get(i-1).setSize(paraStor.get(i-1).getSize()-1);
                                 for (int j = i ; j < paraStor.size(); j++){
@@ -63,13 +69,23 @@ public class keyListner {
                                 break;
                             }
                         }
-                        for (int i = 0 ; i < paraStor.size()-1; i++) {
+                        //remove empty paragraphs
+                        for (int i = 0 ; i < paraStor.size(); i++) {
                             if (paraStor.get(i).getSize() < 1) {
                                 for (int j = i ; j < paraStor.size(); j++){
                                     paraStor.get(j).setID(paraStor.get(j).getID()-1);
                                 }
                                 paraStor.remove(i);
+                                id--;
+                                System.out.println("id: " + id);
+                                System.out.println("paraSzie: " + paraStor.size());
                             }
+                        }
+
+                        //check to have at least 1 paragraph at all times
+                        if (paraStor.size()==0) {
+                            paraStor.add(new paraStorage(1));
+                            paraStor.get(0).setSize(1);
                         }
                         break;
 
