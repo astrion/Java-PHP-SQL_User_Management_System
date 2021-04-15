@@ -32,7 +32,8 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
     private static Boolean tableExist = false;
     private static TextEditTable undoTable;
     private static TextEditTable forgetTable;
-    private static UndoableEdit edit;
+    private static UndoableEdit nextEdit;
+    private static UndoableEdit prevEdit;
     private static int returnValue = 0;
     private final String DEFAULT_TEXT = "";
     private String prev = DEFAULT_TEXT;
@@ -167,11 +168,27 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
 
         keyListner.kl(area);
 
+
         area.getDocument().addUndoableEditListener(
                 new UndoableEditListener() {
                     @Override
                     public void undoableEditHappened(UndoableEditEvent e) {
-                        edit = e.getEdit();
+                        // get one character from UndoableEditEvent
+                        nextEdit =  e.getEdit();
+                        if (prevEdit==null){
+                            prevEdit = nextEdit;
+                        }
+
+                        if (!prevEdit.getPresentationName().equals(nextEdit.getPresentationName())){
+                            //call grouping when insert <-->delete changes
+                            smartUndoManager.addEdit(nextEdit, prev, next);
+                            undoTable.insertRow(smartUndoManager.lastEdits.peek());
+                            forgetTable.addRow(smartUndoManager.lastEdits.peek());
+
+                            // update prev
+                            prev = next;
+                            textChanged = false;
+                        }
                         // accumulate editable events
                         smartUndoManager.undoManager.undoableEditHappened(e);
 
@@ -179,6 +196,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                         next = area.getText();
                         lastEditTime = LocalDateTime.now();
                         textChanged = true;
+                        prevEdit = nextEdit;
                     }
                 }
         );
@@ -187,13 +205,13 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
     class Trigger extends TimerTask {
         public void run() {
             // When no undoable event exists, then ignore the timer event
-            if (edit==null || !textChanged){
+            if (nextEdit==null || !textChanged){
                 return;
             }
             LocalDateTime now = LocalDateTime.now();
             if (ChronoUnit.MILLIS.between(lastEditTime, now ) > 2000) {
 
-                    smartUndoManager.addEdit(edit, prev, next);
+                    smartUndoManager.addEdit(nextEdit, prev, next);
                     undoTable.insertRow(smartUndoManager.lastEdits.peek());
                     forgetTable.addRow(smartUndoManager.lastEdits.peek());
 
