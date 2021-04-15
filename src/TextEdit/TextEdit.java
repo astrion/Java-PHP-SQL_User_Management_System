@@ -9,7 +9,11 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,18 +32,24 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
     private static Boolean tableExist = false;
     private static TextEditTable undoTable;
     private static TextEditTable forgetTable;
-
+    private static UndoableEdit edit;
     private static int returnValue = 0;
     private final String DEFAULT_TEXT = "";
     private String prev = DEFAULT_TEXT;
     private String next = DEFAULT_TEXT;
     private SmartUndoManager smartUndoManager = new SmartUndoManager();
+    private Timer timer;
+    private static boolean textChanged = false;
+    private LocalDateTime lastEditTime = LocalDateTime.now();
 
     public TextEdit() {
         run();
     }
 
     public void run() {
+        timer = new Timer();
+        timer.schedule(new Trigger(), 1000, 500);
+
         frame = new JFrame(EnumWindowCaption.PRIMARY.caption);
 
         // Set the look-and-feel (LNF) of the application
@@ -81,7 +91,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         forgetManagementPanel.add(forgetButtonPanel);
         undoForgetTabbedPane = new JTabbedPane();
         undoForgetTabbedPane.addTab("Undo", undoManagementPanel);
-        undoForgetTabbedPane.addTab("Forget",forgetManagementPanel);
+        undoForgetTabbedPane.addTab("Forget", forgetManagementPanel);
 
         // Set GridPanel and add Text Scroll Pane into left, and Table Scroll Pane into right
         gridPanel = new JPanel(new GridLayout(1, 2));
@@ -161,21 +171,33 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                 new UndoableEditListener() {
                     @Override
                     public void undoableEditHappened(UndoableEditEvent e) {
-                        UndoableEdit edit = e.getEdit();
-
+                        edit = e.getEdit();
                         // update next
                         next = area.getText();
-                        smartUndoManager.addEdit(edit, prev, next );
-
-                        undoTable.insertRow(smartUndoManager.lastEdits.peek());
-                        forgetTable.addRow(smartUndoManager.lastEdits.peek());
-
-                        // update prev
-                        prev = next;
+                        lastEditTime = LocalDateTime.now();
+                        textChanged = true;
                     }
                 }
         );
+    }
 
+    class Trigger extends TimerTask {
+        public void run() {
+            // When no undoable event exists, then ignore the timer event
+            if (edit==null || !textChanged){
+                return;
+            }
+            LocalDateTime now = LocalDateTime.now();
+            if (ChronoUnit.MILLIS.between(lastEditTime, now ) > 2000) {
+                    smartUndoManager.addEdit(edit, prev, next);
+                    undoTable.insertRow(smartUndoManager.lastEdits.peek());
+                    forgetTable.addRow(smartUndoManager.lastEdits.peek());
+
+                    // update prev
+                    prev = next;
+                    textChanged = false;
+                }
+        }
     }
 
     @Override
@@ -200,17 +222,18 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                 returnValue = jfc.showOpenDialog(null);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File f = new File(jfc.getSelectedFile().getAbsolutePath());
-                    try{
+                    try {
                         FileReader read = new FileReader(f);
                         Scanner scan = new Scanner(read);
-                        while(scan.hasNextLine()){
+                        while (scan.hasNextLine()) {
                             String line = scan.nextLine() + "\n";
                             ingest = ingest + line;
                         }
                         area.setText(ingest);
                         prev = area.getText();
+                    } catch (FileNotFoundException ex) {
+                        ex.printStackTrace();
                     }
-                    catch ( FileNotFoundException ex) { ex.printStackTrace(); }
                 }
                 break;
 
@@ -224,10 +247,10 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                     out.close();
                 } catch (FileNotFoundException ex) {
                     Component f = null;
-                    JOptionPane.showMessageDialog(f,"File not found.");
+                    JOptionPane.showMessageDialog(f, "File not found.");
                 } catch (IOException ex) {
                     Component f = null;
-                    JOptionPane.showMessageDialog(f,"Error.");
+                    JOptionPane.showMessageDialog(f, "Error.");
                 }
                 break;
 
@@ -358,7 +381,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                 break;
 
             case VIEW_HIDE_LAST_EDIT_HISTORY:
-                if (tableExist){
+                if (tableExist) {
 //                    gridPanel.remove(tableScrollPane);
                     gridPanel.remove(undoForgetTabbedPane);
                 } else {

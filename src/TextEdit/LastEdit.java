@@ -28,5 +28,4 @@ public class LastEdit implements TextProcessing {
                 " r:" + this.edit.getRedoPresentationName() +
                 " u:" + this.edit.getUndoPresentationName();
     }
-
 }
