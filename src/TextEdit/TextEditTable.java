@@ -7,16 +7,9 @@ import java.time.format.DateTimeFormatter;
 public class TextEditTable extends JTable {
     public TextEditTable(final Object[][] rowData) {
         super(new DefaultTableModel(rowData, columnNames()));
-    }
-
-    @Override
-    public Class<?> getColumnClass(int column) {
-        switch (column) {
-            case 5:
-                return Boolean.class;
-            default:
-                return String.class;
-        }
+        // disable editing
+        setCellSelectionEnabled(false);
+        setRequestFocusEnabled(false);
     }
 
     static String[] columnNames() {
@@ -28,6 +21,27 @@ public class TextEditTable extends JTable {
                 "Difference",
                 "Set"
         };
+    }
+
+
+    @Override
+    public Class<?> getColumnClass(int column) {
+        switch (column) {
+            case 5:
+                return Boolean.class;
+            default:
+                return String.class;
+        }
+    }
+
+    @Override
+    public boolean isCellSelected(int row, int column) {
+        return column == 5;
+    }
+
+    @Override
+    public boolean isCellEditable(int row, int column) {
+        return column == 5;
     }
 
     @Override
