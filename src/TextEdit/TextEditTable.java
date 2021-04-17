@@ -35,11 +35,6 @@ public class TextEditTable extends JTable {
     }
 
     @Override
-    public boolean isCellSelected(int row, int column) {
-        return column == 5;
-    }
-
-    @Override
     public boolean isCellEditable(int row, int column) {
         return column == 5;
     }
