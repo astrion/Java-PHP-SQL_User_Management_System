@@ -403,6 +403,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                 break;
 
             case VIEW_HIDE_LAST_EDIT_HISTORY:
+
                 if (tableExist) {
                     gridPanel.remove(undoForgetTabbedPane);
                 } else {
@@ -411,6 +412,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                 tableExist = !tableExist;
                 frame.setVisible(true);
                 break;
+
             case ABOUT:
 
                 // TODO: (OPTIONAL) add a Splash Screen that can get reloaded from here

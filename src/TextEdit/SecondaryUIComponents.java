@@ -9,7 +9,7 @@ import java.util.Stack;
 public interface SecondaryUIComponents {
 
     // static methods
-    static JTable getLastEditTable(Stack dataStack) {
+    public static JTable getLastEditTable(Stack dataStack) {
 
         // set column names
         String[] colNames = new String[] {
@@ -48,7 +48,7 @@ public interface SecondaryUIComponents {
         };
     }
 
-    static JFrame getLastEditView() {
+    public static JFrame getLastEditView() {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         return frame;
