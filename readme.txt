@@ -2,7 +2,7 @@
 SMARTY PROJECT
 --------------
 
-REPO WORKFLOW
+# HOW TO SETUP A LOCAL BRANCH, COMMIT CHANGES, SETUP A REMOTE BRANCH, AND MAKE A PULL REQUEST
 
 # set a local clone of master in shared repo
 mkdir REPOS
@@ -20,12 +20,12 @@ git status
 git branch my_branch
 git checkout my_branch
 
-# the below is a sum of the two commands above
-git checkout -b poc_YourInitials
+# (optional) the line below as a sum of the two commands above
+git checkout -b my_branch
 
 # set local branch to pull upstream from local master
 git pull
-git branch --set-upstream-to=master poc_YourInitials
+git branch --set-upstream-to=master my_branch
 
 # work on your branch, and then check diff and status
 git diff
@@ -37,5 +37,14 @@ git add src/file2
 git commit -m "#: update of file1 and file2 for adding X feature"
 git status
 
-# push
-git push -u origin poc_YourInitials
+# (once only) push to a remote copy of the local branch you are working with
+git push -u origin my_branch
+
+# (if a remote branch already exists)
+git push origin my_branch
+
+
+# HOW TO RUN UNIT TESTS
+1. Open IntelliJ
+2. Right-click on Concordia_COMP5541_Winter2021/src/test
+3. Left-click on'Run 'Tests in 'test''

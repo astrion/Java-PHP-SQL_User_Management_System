@@ -1,11 +1,8 @@
 package test;
 
-import TextEdit.LastEdit;
 import TextEdit.SmartUndoManager;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIf;
-
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
@@ -18,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class SmartUndoManagerTest {
 
 
-    private static UndoableEdit getTestUndoableEdit(boolean canRedo, boolean canUndo) {
+    public static UndoableEdit getTestUndoableEdit(boolean canRedo, boolean canUndo) {
         return new UndoableEdit() {
             @Override
             public void undo() throws CannotUndoException {
