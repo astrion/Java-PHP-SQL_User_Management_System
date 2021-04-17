@@ -178,7 +178,6 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         frame.setJMenuBar(menu_main);
         frame.setVisible(true);
 
-        keyListner.kl(area);
 
 
         area.getDocument().addUndoableEditListener(
