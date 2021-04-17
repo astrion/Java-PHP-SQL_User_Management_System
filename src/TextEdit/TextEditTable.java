@@ -19,20 +19,32 @@ public class TextEditTable extends JTable {
         }
     }
 
-    static String[] columnNames(){
+    static String[] columnNames() {
         return new String[]{
                 "#",
                 "Timestamp",
-                "HashCode",
+                "P",
                 "EditType",
                 "Difference",
                 "Set"
         };
-    };
+    }
+
+    @Override
+    public void setValueAt(Object aValue, int row, int column) {
+        super.setValueAt(aValue, row, column);
+
+        if (column == 5 && aValue.equals(true)) {
+            for (int i = 0; i < dataModel.getRowCount(); i++) {
+                if (row != i)
+                    super.setValueAt(false, i, 5);
+            }
+        }
+    }
 
     @Override
     public DefaultTableModel getModel() {
-        return (DefaultTableModel)super.getModel();
+        return (DefaultTableModel) super.getModel();
     }
 
     public Object[] newColumns(int index, LastEdit lastEdit) {

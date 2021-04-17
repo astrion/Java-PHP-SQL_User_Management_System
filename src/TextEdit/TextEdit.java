@@ -4,6 +4,9 @@ import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileSystemView;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import javax.swing.undo.UndoableEdit;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -19,7 +22,7 @@ import java.util.logging.Logger;
 
 public final class TextEdit extends JFrame implements ActionListener, TextProcessing, SecondaryUIComponents {
     private static JTextArea area;
-    private static JTable table;
+    //    private static JTable table; //deleted
     private static JFrame frame;
     private static JScrollPane undoTableScrollPane;
     private static JPanel undoManagementPanel;
@@ -66,9 +69,16 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         area = new JTextArea();
         area.setLineWrap(true);
 
+
         // The DefultTableModel supports addRow method to update its contents
         undoTable = new TextEditTable(new Object[][]{});
+        TableColumn undoTableColumn = undoTable.getColumnModel().getColumn(5);
+        undoTableColumn.setCellEditor(new RadioButtonCellEditorRenderer());
+        undoTableColumn.setCellRenderer(new RadioButtonCellEditorRenderer());
         forgetTable = new TextEditTable(new Object[][]{});
+        TableColumn forgetTableColumn = forgetTable.getColumnModel().getColumn(5);
+        forgetTableColumn.setCellEditor(new RadioButtonCellEditorRenderer());
+        forgetTableColumn.setCellRenderer(new RadioButtonCellEditorRenderer());
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -115,8 +125,9 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         JMenuItem menuitem_clear_edit_history = new JMenuItem(EnumCommandCaption.CLEAR_LAST_EDIT_HISTORY.getCaption());
         JMenuItem menuitem_clear_edit_history_by_n_steps = new JMenuItem(EnumCommandCaption.CLEAR_LAST_EDIT_HISTORY_BY_N_STEPS.getCaption());
         JMenuItem menuitem_clear_edit_history_by_elapsed_Time = new JMenuItem(EnumCommandCaption.CLEAR_LAST_EDIT_HISTORY_BY_ELAPSED_TIME.getCaption());
-        JMenuItem menuitem_redo = new JMenuItem(EnumCommandCaption.REDO.getCaption());
-        JMenuItem menuitem_undo = new JMenuItem(EnumCommandCaption.UNDO.getCaption());
+        // the below two lines are commented out as the default undo and redo buttons are no longer needed to satisfy the requirements (contract)
+        // JMenuItem menuitem_redo = new JMenuItem(EnumCommandCaption.REDO.getCaption());
+        // JMenuItem menuitem_undo = new JMenuItem(EnumCommandCaption.UNDO.getCaption());
         JMenuItem menuitem_undo_by_n_steps = new JMenuItem(EnumCommandCaption.UNDO_SEQUENTIALLY_BY_N_STEPS.getCaption());
         JMenuItem menuitem_undo_by_elapsed_time = new JMenuItem(EnumCommandCaption.UNDO_SEQUENTIALLY_BY_ELAPSED_TIME.getCaption());
         JMenuItem menuitem_undo_by_any_order = new JMenuItem(EnumCommandCaption.UNDO_BY_ANY_ORDER.getCaption());
@@ -132,8 +143,9 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         menuitem_clear_edit_history.addActionListener(this);
         menuitem_clear_edit_history_by_n_steps.addActionListener(this);
         menuitem_clear_edit_history_by_elapsed_Time.addActionListener(this);
-        menuitem_redo.addActionListener(this);
-        menuitem_undo.addActionListener(this);
+        // the below two lines are commented out as the default undo and redo buttons are no longer needed to satisfy the requirements (contract)
+        //  menuitem_redo.addActionListener(this);
+        //  menuitem_undo.addActionListener(this);
         menuitem_undo_by_n_steps.addActionListener(this);
         menuitem_undo_by_elapsed_time.addActionListener(this);
         menuitem_undo_by_any_order.addActionListener(this);
@@ -154,8 +166,8 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         menu_edit.add(menuitem_clear_edit_history_by_n_steps);
         menu_edit.add(menuitem_clear_edit_history_by_elapsed_Time);
 
-        menu_edit.add(menuitem_redo);
-        menu_edit.add(menuitem_undo);
+//        menu_edit.add(menuitem_redo);
+//        menu_edit.add(menuitem_undo);
         menu_edit.add(menuitem_undo_by_n_steps);
         menu_edit.add(menuitem_undo_by_elapsed_time);
         menu_edit.add(menuitem_undo_by_any_order);
@@ -174,14 +186,16 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                     @Override
                     public void undoableEditHappened(UndoableEditEvent e) {
                         // get one character from UndoableEditEvent
-                        nextEdit =  e.getEdit();
-                        if (prevEdit==null){
+                        nextEdit = e.getEdit();
+                        if (prevEdit == null) {
                             prevEdit = nextEdit;
                         }
 
-                        if (!prevEdit.getPresentationName().equals(nextEdit.getPresentationName())){
+                        // following block is to handle when the previous mode (insert, delete) does not match with the
+                        // next mode.
+                        if (!prevEdit.getPresentationName().equals(nextEdit.getPresentationName())) {
                             //call grouping when insert <-->delete changes
-                            smartUndoManager.addEdit(nextEdit, prev, next);
+                            smartUndoManager.addEdit(prevEdit, prev, next);
                             undoTable.insertRow(smartUndoManager.lastEdits.peek());
                             forgetTable.addRow(smartUndoManager.lastEdits.peek());
 
@@ -205,20 +219,54 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
     class Trigger extends TimerTask {
         public void run() {
             // When no undoable event exists, then ignore the timer event
-            if (nextEdit==null || !textChanged){
+            if (nextEdit == null || !textChanged) {
                 return;
             }
             LocalDateTime now = LocalDateTime.now();
-            if (ChronoUnit.MILLIS.between(lastEditTime, now ) > 2000) {
+            if (ChronoUnit.MILLIS.between(lastEditTime, now) > 2000) {
 
-                    smartUndoManager.addEdit(nextEdit, prev, next);
-                    undoTable.insertRow(smartUndoManager.lastEdits.peek());
-                    forgetTable.addRow(smartUndoManager.lastEdits.peek());
+                smartUndoManager.addEdit(nextEdit, prev, next);
+                undoTable.insertRow(smartUndoManager.lastEdits.peek());
+                forgetTable.addRow(smartUndoManager.lastEdits.peek());
 
-                    // update prev
-                    prev = next;
-                    textChanged = false;
-                }
+                // update prev
+                prev = next;
+                textChanged = false;
+            }
+        }
+    }
+
+    // define class to support RadioButton updates
+    public class RadioButtonCellEditorRenderer extends AbstractCellEditor implements TableCellRenderer, TableCellEditor, ActionListener {
+
+        private JRadioButton radioButton;
+
+        public RadioButtonCellEditorRenderer() {
+            this.radioButton = new JRadioButton();
+            radioButton.addActionListener(this);
+            radioButton.setOpaque(false);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            radioButton.setSelected(Boolean.TRUE.equals(value));
+            return radioButton;
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+            radioButton.setSelected(Boolean.TRUE.equals(value));
+            return radioButton;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            stopCellEditing();
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return radioButton.isSelected();
         }
     }
 
