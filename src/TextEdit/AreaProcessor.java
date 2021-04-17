@@ -51,7 +51,7 @@ public class AreaProcessor {
             System.out.print("ID: " + (i+1));
 
             List currLineinUM = undoManager.get(i);
-            //System.out.println("check size: " + check.size());
+//            System.out.println("check size: " + check.size());
             for (int j = 0; j < currLineinUM.size(); j++) {
                 System.out.print("state :" + j + " " + currLineinUM.get(j));
             }
@@ -65,7 +65,7 @@ public class AreaProcessor {
 }
 
 
-//AreaProcessor runner = new AreaProcessor(area, undoManager);
+
 
 
 

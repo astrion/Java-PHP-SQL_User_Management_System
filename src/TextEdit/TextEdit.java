@@ -19,6 +19,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.List;
+import java.util.ArrayList;
 
 public final class TextEdit extends JFrame implements ActionListener, TextProcessing, SecondaryUIComponents {
     private static JTextArea area;
@@ -45,6 +47,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
     private Timer timer;
     private static boolean textChanged = false;
     private LocalDateTime lastEditTime = LocalDateTime.now();
+    static List<List<String>> undoManager = new ArrayList<List<String>>();
 
     public TextEdit() {
         run();
@@ -223,7 +226,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
             }
             LocalDateTime now = LocalDateTime.now();
             if (ChronoUnit.MILLIS.between(lastEditTime, now) > 2000) {
-
+                AreaProcessor runner = new AreaProcessor(area, undoManager);
                 smartUndoManager.addEdit(nextEdit, prev, next);
                 undoTable.insertRow(smartUndoManager.lastEdits.peek());
                 forgetTable.addRow(smartUndoManager.lastEdits.peek());
