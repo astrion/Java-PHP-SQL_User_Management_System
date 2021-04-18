@@ -20,13 +20,13 @@ import java.util.logging.Logger;
 public final class TextEdit extends JFrame implements ActionListener, TextProcessing, SecondaryUIComponents {
     private static JTextArea area;
     private static JFrame frame;
-    private static JScrollPane forgetTableScrollPane;
-    private static JPanel forgetManagementPanel;
-    private static JPanel forgetButtonPanel;
+    private static JScrollPane dataTableScrollPane;
+    private static JPanel dataManagementPanel;
+    private static JPanel dataButtonPanel;
     private static JPanel gridPanel;
     private static JTabbedPane undoForgetTabbedPane;
     private static Boolean tableExist = false;
-    private static TextEditTable forgetTable;
+    private static TextEditTable dataTable;
     private static UndoableEdit nextEdit;
     private static UndoableEdit prevEdit;
     private static JButton undoJbutton;
@@ -68,7 +68,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
 
 
         // The DefultTableModel supports addRow method to update its contents
-        forgetTable = new TextEditTable(new Object[][]{});
+        dataTable = new TextEditTable(new Object[][]{});
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -77,20 +77,20 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
 
         // Put text area into scroll pane to enable scrolling feature
         JScrollPane textScrollPane = new JScrollPane(area);
-        forgetTableScrollPane = new JScrollPane(forgetTable);
-        forgetButtonPanel = new JPanel();
+        dataTableScrollPane = new JScrollPane(dataTable);
+        dataButtonPanel = new JPanel();
         undoJbutton = new JButton("Undo");
         forgetJbutton = new JButton("Forget");
         forgetAllJbutton = new JButton("Forget All");
-        forgetButtonPanel.add(undoJbutton);
-        forgetButtonPanel.add(forgetJbutton);
-        forgetButtonPanel.add(forgetAllJbutton);
+        dataButtonPanel.add(undoJbutton);
+        dataButtonPanel.add(forgetJbutton);
+        dataButtonPanel.add(forgetAllJbutton);
 
         // Add actions for buttons
         undoJbutton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                TextProcessor.Undo(undoManager, forgetTable, area);
+                TextProcessor.Undo(undoManager, dataTable, area);
             }
         });
         forgetJbutton.addActionListener(new ActionListener() {
@@ -106,9 +106,9 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
             }
         });
 
-        forgetManagementPanel = new JPanel(new GridLayout(2, 1));
-        forgetManagementPanel.add(forgetTableScrollPane);
-        forgetManagementPanel.add(forgetButtonPanel);
+        dataManagementPanel = new JPanel(new GridLayout(2, 1));
+        dataManagementPanel.add(dataTableScrollPane);
+        dataManagementPanel.add(dataButtonPanel);
 
         // Set GridPanel and add Text Scroll Pane into left, and Table Scroll Pane into right
         gridPanel = new JPanel(new GridLayout(1, 2));
@@ -224,7 +224,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                 TextProcessor.LineUpdates(area, undoManager);
                 TextProcessor.Print(undoManager);
 
-                forgetTable.Refresh(undoManager);
+                dataTable.Refresh(undoManager);
                 textChanged = false;
 
             }
@@ -397,9 +397,9 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
             case VIEW_HIDE_LAST_EDIT_HISTORY:
 
                 if (tableExist) {
-                    gridPanel.remove(forgetManagementPanel);
+                    gridPanel.remove(dataManagementPanel);
                 } else {
-                    gridPanel.add(forgetManagementPanel);
+                    gridPanel.add(dataManagementPanel);
                 }
                 tableExist = !tableExist;
                 frame.setVisible(true);
