@@ -26,16 +26,16 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
     private static JTextArea area;
     //    private static JTable table; //deleted
     private static JFrame frame;
-    private static JScrollPane undoTableScrollPane;
-    private static JPanel undoManagementPanel;
+//    private static JScrollPane undoTableScrollPane;
+//    private static JPanel undoManagementPanel;
     private static JScrollPane forgetTableScrollPane;
     private static JPanel forgetManagementPanel;
-    private static JPanel undoButtonPanel;
+//    private static JPanel undoButtonPanel;
     private static JPanel forgetButtonPanel;
     private static JPanel gridPanel;
     private static JTabbedPane undoForgetTabbedPane;
     private static Boolean tableExist = false;
-    private static TextEditTable undoTable;
+//    private static TextEditTable undoTable;
     private static TextEditTable forgetTable;
     private static UndoableEdit nextEdit;
     private static UndoableEdit prevEdit;
@@ -74,10 +74,10 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
 
 
         // The DefultTableModel supports addRow method to update its contents
-        undoTable = new TextEditTable(new Object[][]{});
-        TableColumn undoTableColumn = undoTable.getColumnModel().getColumn(5);
-        undoTableColumn.setCellEditor(new RadioButtonCellEditorRenderer());
-        undoTableColumn.setCellRenderer(new RadioButtonCellEditorRenderer());
+//        undoTable = new TextEditTable(new Object[][]{});
+//        TableColumn undoTableColumn = undoTable.getColumnModel().getColumn(5);
+//        undoTableColumn.setCellEditor(new RadioButtonCellEditorRenderer());
+//        undoTableColumn.setCellRenderer(new RadioButtonCellEditorRenderer());
         forgetTable = new TextEditTable(new Object[][]{});
         TableColumn forgetTableColumn = forgetTable.getColumnModel().getColumn(5);
         forgetTableColumn.setCellEditor(new RadioButtonCellEditorRenderer());
@@ -90,22 +90,24 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
 
         // Put text area into scroll pane to enable scrolling feature
         JScrollPane textScrollPane = new JScrollPane(area);
-        undoTableScrollPane = new JScrollPane(undoTable);
-        undoButtonPanel = new JPanel();
-        undoButtonPanel.add(new JButton("Undo Items"));
+//        undoTableScrollPane = new JScrollPane(undoTable);
+//        undoButtonPanel = new JPanel();
+//        undoButtonPanel.add(new JButton("Undo Items"));
         forgetTableScrollPane = new JScrollPane(forgetTable);
         forgetButtonPanel = new JPanel();
-        forgetButtonPanel.add(new JButton("Forget Items"));
+        forgetButtonPanel.add(new JButton("Undo"));
+        forgetButtonPanel.add(new JButton("Forget"));
+        forgetButtonPanel.add(new JButton("Forget All"));
 
-        undoManagementPanel = new JPanel(new GridLayout(2, 1));
-        undoManagementPanel.add(undoTableScrollPane);
-        undoManagementPanel.add(undoButtonPanel);
+//        undoManagementPanel = new JPanel(new GridLayout(2, 1));
+//        undoManagementPanel.add(undoTableScrollPane);
+//        undoManagementPanel.add(undoButtonPanel);
         forgetManagementPanel = new JPanel(new GridLayout(2, 1));
         forgetManagementPanel.add(forgetTableScrollPane);
         forgetManagementPanel.add(forgetButtonPanel);
         undoForgetTabbedPane = new JTabbedPane();
-        undoForgetTabbedPane.addTab("Undo", undoManagementPanel);
-        undoForgetTabbedPane.addTab("Forget", forgetManagementPanel);
+//        undoForgetTabbedPane.addTab("Undo", undoManagementPanel);
+//        undoForgetTabbedPane.addTab("Forget", forgetManagementPanel);
 
         // Set GridPanel and add Text Scroll Pane into left, and Table Scroll Pane into right
         gridPanel = new JPanel(new GridLayout(1, 2));
@@ -475,9 +477,9 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
             case VIEW_HIDE_LAST_EDIT_HISTORY:
 
                 if (tableExist) {
-                    gridPanel.remove(undoForgetTabbedPane);
+                    gridPanel.remove(forgetManagementPanel);
                 } else {
-                    gridPanel.add(undoForgetTabbedPane);
+                    gridPanel.add(forgetManagementPanel);
                 }
                 tableExist = !tableExist;
                 frame.setVisible(true);
