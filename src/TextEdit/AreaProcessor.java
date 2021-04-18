@@ -11,6 +11,7 @@ public class AreaProcessor {
     int lineNo = 0;
 
 
+
     //constructor
     public AreaProcessor(JTextArea area, List<List<String>> undoManager) {
         String text = area.getText();
@@ -41,14 +42,14 @@ public class AreaProcessor {
 
 
                 }
-                start = i;
+                start = i+1;
                 lineNo++;
             }
         }
         //printing
         for (int i = 0; i < undoManager.size(); i++){
 
-            System.out.print("ID: " + (i+1));
+            System.out.print("ID: " + (i+1) + " | ");
 
             List currLineinUM = undoManager.get(i);
 //            System.out.println("check size: " + check.size());

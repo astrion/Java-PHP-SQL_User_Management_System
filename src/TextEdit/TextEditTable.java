@@ -3,6 +3,8 @@ package TextEdit;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TextEditTable extends JTable {
     public TextEditTable(final Object[][] rowData) {
@@ -15,10 +17,10 @@ public class TextEditTable extends JTable {
     static String[] columnNames() {
         return new String[]{
                 "#",
-                "Timestamp",
-                "P",
-                "EditType",
-                "Difference",
+                "Line",
+                "State",
+                "Description",
+                "Empty",
                 "Set"
         };
     }
@@ -56,29 +58,48 @@ public class TextEditTable extends JTable {
         return (DefaultTableModel) super.getModel();
     }
 
-    public Object[] newColumns(int index, LastEdit lastEdit) {
+
+
+    public Object[] newColumns(int index, String description, int line, int state) {
         Object[] columns = new Object[columnNames().length];
 
-        columns[0] = "" + index;
-        columns[1] = lastEdit.dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        columns[2] = "" + lastEdit.edit.hashCode();
-        columns[3] = lastEdit.edit.getPresentationName();
-        columns[4] = lastEdit.difference;
-        columns[5] = false;
+
+                columns[0] = "" + index;
+                columns[1] = line;
+                columns[2] = state;
+                columns[3] = description;
+                columns[4] = "";
+                columns[5] = false;
+
+
         return columns;
     }
 
-    public void insertRow(LastEdit lastEdit) {
-        DefaultTableModel model = getModel();
-        Object[] columns = newColumns(model.getRowCount(), lastEdit);
+//    public void insertRow(List<List<String>> undoManager) {
+//        DefaultTableModel model = getModel();
+//        Object[] columns = newColumns(model.getRowCount(), undoManager);
+//
+//        model.insertRow(0, columns);
+//    }
 
-        model.insertRow(0, columns);
+    List<List<Integer> > all_ij = new ArrayList<List<Integer> >();
+    List<Integer> js = new ArrayList<Integer>();
+
+
+
+    public void addRow(String description, int line, int state) {
+            DefaultTableModel model = getModel();
+            Object[] columns = newColumns(model.getRowCount(), description, line, state);
+            int locationNum = 0;
+            for(int i=0; i<model.getRowCount(); ++i){
+                if ((int) model.getValueAt(i, 1) > line)
+                    break;
+                locationNum += 1;
+            }
+            System.out.println(locationNum);
+            model.insertRow(locationNum,columns);
+
     }
 
-    public void addRow(LastEdit lastEdit) {
-        DefaultTableModel model = getModel();
-        Object[] columns = newColumns(model.getRowCount(), lastEdit);
-
-        model.addRow(columns);
-    }
 }
+

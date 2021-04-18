@@ -198,8 +198,8 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                         if (!prevEdit.getPresentationName().equals(nextEdit.getPresentationName())) {
                             //call grouping when insert <-->delete changes
                             smartUndoManager.addEdit(prevEdit, prev, next);
-                            undoTable.insertRow(smartUndoManager.lastEdits.peek());
-                            forgetTable.addRow(smartUndoManager.lastEdits.peek());
+                            //undoTable.insertRow(smartUndoManager.lastEdits.peek());
+                            //forgetTable.addRow(smartUndoManager.lastEdits.peek());
 
                             // update prev
                             prev = next;
@@ -218,6 +218,9 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         );
     }
 
+    List<List<Integer>> prevLastState = new ArrayList<List<Integer>>();// keeps thack of states in Table
+
+
     class Trigger extends TimerTask {
         public void run() {
             // When no undoable event exists, then ignore the timer event
@@ -228,8 +231,25 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
             if (ChronoUnit.MILLIS.between(lastEditTime, now) > 2000) {
                 AreaProcessor runner = new AreaProcessor(area, undoManager);
                 smartUndoManager.addEdit(nextEdit, prev, next);
-                undoTable.insertRow(smartUndoManager.lastEdits.peek());
-                forgetTable.addRow(smartUndoManager.lastEdits.peek());
+                //undoTable.insertRow(undoManager);
+
+                for (int i = 0; i < undoManager.size(); i++){
+                    List currLineinUM = undoManager.get(i);
+                    prevLastState.add(new ArrayList<Integer>());
+                    int laggingImens = currLineinUM.size() - prevLastState.get(i).size();
+                    System.out.println("laggingImens " + laggingImens);
+                    System.out.println("currLineinUM.size() " + currLineinUM.size());
+                    if (laggingImens > 0) {
+                        for (int j = prevLastState.get(i).size(); j < currLineinUM.size(); j++) {
+                            forgetTable.addRow((String) currLineinUM.get(j), i, (j + laggingImens));
+                            prevLastState.get(i).add(j);
+                        }
+                    }
+
+
+                }
+
+                //forgetTable.addRow(undoManager);
 
                 // update prev
                 prev = next;
