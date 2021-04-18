@@ -231,12 +231,13 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
             }
             LocalDateTime now = LocalDateTime.now();
             if (ChronoUnit.MILLIS.between(lastEditTime, now) > 2000) {
-                AreaProcessor runner = new AreaProcessor(area, undoManager);
+                AreaProcessor.LineUpdates(area, undoManager);
+                AreaProcessor.Print(undoManager);
                 smartUndoManager.addEdit(nextEdit, prev, next);
                 //undoTable.insertRow(undoManager);
 
                 for (int i = 0; i < undoManager.size(); i++){
-                    List currLineinUM = undoManager.get(i);
+                    List<String> currLineinUM = undoManager.get(i);
                     prevLastState.add(new ArrayList<Integer>());
                     int laggingImens = currLineinUM.size() - prevLastState.get(i).size();
                     System.out.println("laggingImens " + laggingImens);

@@ -7,62 +7,40 @@ import java.util.ArrayList;
 
 public class AreaProcessor {
 
-    int start = 0;
-    int lineNo = 0;
+    public static void LineUpdates(JTextArea area, List<List<String>> undoManager) {
+        String[] lines = area.getText().split("\n");
 
-
-
-    //constructor
-    public AreaProcessor(JTextArea area, List<List<String>> undoManager) {
-        String text = area.getText();
-
-        for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == 10) {
-                String currLine = (text.substring(start, i+1));
-                //System.out.println("currLine " + currLine);
-                //System.out.println("start " + start + "| i " + i);
-                //System.out.println("size UM " + undoManager.size());
-                //System.out.println("lineNo " + lineNo);
-                // line is new
-                if (undoManager.isEmpty() || undoManager.size() <= lineNo ) {
-                    List<String> currLsit = new ArrayList<String>();
-                    currLsit.add(currLine);
-                    undoManager.add(currLsit);
+        for (int i = 0; i < lines.length; i++) {
+            // line is new
+            if (undoManager.isEmpty() || undoManager.size() <= i) {
+                List<String> currLsit = new ArrayList<String>();
+                currLsit.add(lines[i]);
+                undoManager.add(currLsit);
+            }
+            //if line exists
+            else {
+                List<String> currLineInUM = undoManager.get(i);
+                String currState = currLineInUM.get(currLineInUM.size() - 1);
+                if (!currState.equals(lines[i])) {
+                    currLineInUM.add(lines[i]);
                 }
-                //if line exists
-                else if (undoManager.size() > lineNo) {
-                    List currLineInUM = undoManager.get(lineNo);
-                    String currState = (String) currLineInUM.get(currLineInUM.size()-1);
-                    //System.out.println("currLineInUM " + currState);
-                    //System.out.println("currLine " + currLine);
-                    if (!currState.equals(currLine)){
-                        currLineInUM.add(currLine);
-                    }
-
-
-
-                }
-                start = i+1;
-                lineNo++;
             }
         }
-        //printing
-        for (int i = 0; i < undoManager.size(); i++){
-
-            System.out.print("ID: " + (i+1) + " | ");
-
-            List currLineinUM = undoManager.get(i);
-//            System.out.println("check size: " + check.size());
-            for (int j = 0; j < currLineinUM.size(); j++) {
-                System.out.print("state :" + j + " " + currLineinUM.get(j));
-            }
-        }
-
-
-
     }
 
+    public static void Print(List<List<String>> undoManager) {
+        System.out.println("#AreaProcessor.Print");
+        //printing
+        for (int i = 0; i < undoManager.size(); i++) {
 
+            System.out.print("Line: " + (i + 1) + " | ");
+            List<String> currLineinUM = undoManager.get(i);
+            for (int j = currLineinUM.size()-1; j >=0; --j) {
+                System.out.print(" state :" + j + " " + currLineinUM.get(j));
+            }
+            System.out.println();
+        }
+    }
 }
 
 
