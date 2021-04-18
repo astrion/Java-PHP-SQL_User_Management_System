@@ -8,8 +8,6 @@ import java.util.List;
 public class TextEditTable extends JTable {
     public TextEditTable(final Object[][] rowData) {
         super(new DefaultTableModel(rowData, columnNames()));
-        // disable editing
-        setCellSelectionEnabled(false);
         setRequestFocusEnabled(false);
     }
 
@@ -23,7 +21,6 @@ public class TextEditTable extends JTable {
                 "Set"
         };
     }
-
 
     @Override
     public Class<?> getColumnClass(int column) {
@@ -41,6 +38,7 @@ public class TextEditTable extends JTable {
         }
     }
 
+    // disable editing, the editing is only allowed for set selection
     @Override
     public boolean isCellEditable(int row, int column) {
         return column == 5;

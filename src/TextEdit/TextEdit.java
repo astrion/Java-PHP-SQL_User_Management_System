@@ -39,6 +39,9 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
     private static TextEditTable forgetTable;
     private static UndoableEdit nextEdit;
     private static UndoableEdit prevEdit;
+    private static JButton undoJbutton;
+    private static JButton forgetJbutton;
+    private static JButton forgetAllJbutton;
     private static int returnValue = 0;
     private final String DEFAULT_TEXT = "";
     private String prev = DEFAULT_TEXT;
@@ -95,9 +98,32 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
 //        undoButtonPanel.add(new JButton("Undo Items"));
         forgetTableScrollPane = new JScrollPane(forgetTable);
         forgetButtonPanel = new JPanel();
-        forgetButtonPanel.add(new JButton("Undo"));
-        forgetButtonPanel.add(new JButton("Forget"));
-        forgetButtonPanel.add(new JButton("Forget All"));
+        undoJbutton = new JButton("Undo");
+        forgetJbutton = new JButton("Forget");
+        forgetAllJbutton = new JButton("Forget All");
+        forgetButtonPanel.add(undoJbutton);
+        forgetButtonPanel.add(forgetJbutton);
+        forgetButtonPanel.add(forgetAllJbutton);
+
+        // Add actions for buttons
+        undoJbutton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TextProcessor.Undo(undoManager, forgetTable, area);
+            }
+        });
+        forgetJbutton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ;
+            }
+        });
+        forgetAllJbutton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ;
+            }
+        });
 
 //        undoManagementPanel = new JPanel(new GridLayout(2, 1));
 //        undoManagementPanel.add(undoTableScrollPane);
@@ -231,8 +257,8 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
             }
             LocalDateTime now = LocalDateTime.now();
             if (ChronoUnit.MILLIS.between(lastEditTime, now) > 2000) {
-                AreaProcessor.LineUpdates(area, undoManager);
-                AreaProcessor.Print(undoManager);
+                TextProcessor.LineUpdates(area, undoManager);
+                TextProcessor.Print(undoManager);
                 smartUndoManager.addEdit(nextEdit, prev, next);
                 //undoTable.insertRow(undoManager);
 
@@ -244,7 +270,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                     System.out.println("currLineinUM.size() " + currLineinUM.size());
                     if (laggingImens > 0) {
                         for (int j = prevLastState.get(i).size(); j < currLineinUM.size(); j++) {
-                            forgetTable.addRow((String) currLineinUM.get(j), i, (j + laggingImens));
+                            forgetTable.addRow((String) currLineinUM.get(j), i, (j + laggingImens-1));
                             prevLastState.get(i).add(j);
                         }
                     }
