@@ -2,13 +2,27 @@ package TextEdit;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.util.ArrayList;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 
 public class TextEditTable extends JTable {
     public TextEditTable(final Object[][] rowData) {
         super(new DefaultTableModel(rowData, columnNames()));
         setRequestFocusEnabled(false);
+
+        restyleUI();
+    }
+
+    // RadioButton restyling from Checkbox to RadioButton
+    private void restyleUI(){
+        TableColumn forgetTableColumn = getColumnModel().getColumn(5);
+        forgetTableColumn.setCellEditor(new RadioButtonCellEditorRenderer());
+        forgetTableColumn.setCellRenderer(new RadioButtonCellEditorRenderer());
     }
 
     static String[] columnNames() {
@@ -79,18 +93,6 @@ public class TextEditTable extends JTable {
         return columns;
     }
 
-//    public void insertRow(List<List<String>> undoManager) {
-//        DefaultTableModel model = getModel();
-//        Object[] columns = newColumns(model.getRowCount(), undoManager);
-//
-//        model.insertRow(0, columns);
-//    }
-
-    List<List<Integer> > all_ij = new ArrayList<List<Integer> >();
-    List<Integer> js = new ArrayList<Integer>();
-
-
-
     public void addRow(String description, int line, int state) {
             DefaultTableModel model = getModel();
             Object[] columns = newColumns(model.getRowCount(), description, line, state);
@@ -105,5 +107,53 @@ public class TextEditTable extends JTable {
 
     }
 
+
+    // add rows
+    public void Refresh(List<List<String>> editHistory){
+        DefaultTableModel model = new DefaultTableModel(new Object[][]{}, columnNames());
+        setModel(model);
+        restyleUI();
+        for (int i=0; i<editHistory.size(); i++){
+            List<String> lineEditHistory = editHistory.get(i);
+            for(int j=0; j<lineEditHistory.size(); j++){
+                String textAtState = lineEditHistory.get(j);
+                addRow(textAtState, i, j);
+            }
+        }
+    }
+
 }
 
+// define class to support RadioButton updates
+class RadioButtonCellEditorRenderer extends AbstractCellEditor implements TableCellRenderer, TableCellEditor, ActionListener {
+
+    private JRadioButton radioButton;
+
+    public RadioButtonCellEditorRenderer() {
+        this.radioButton = new JRadioButton();
+        radioButton.addActionListener(this);
+        radioButton.setOpaque(false);
+    }
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        radioButton.setSelected(Boolean.TRUE.equals(value));
+        return radioButton;
+    }
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        radioButton.setSelected(Boolean.TRUE.equals(value));
+        return radioButton;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        stopCellEditing();
+    }
+
+    @Override
+    public Object getCellEditorValue() {
+        return radioButton.isSelected();
+    }
+}
