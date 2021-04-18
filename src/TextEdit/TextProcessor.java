@@ -43,11 +43,11 @@ public class TextProcessor {
         }
     }
 
-    public static void Undo(List<List<String>> undoManager, TextEditTable forgetTable, JTextArea area) {
+    public static void Undo(List<List<String>> undoManager, TextEditTable dataTable, JTextArea area) {
 
         // insert/extract the selection information into ArrayList
         ArrayList<Object[]> pairList = new ArrayList<Object[]>();
-        DefaultTableModel model = forgetTable.getModel();
+        DefaultTableModel model = dataTable.getModel();
         for (int i = 0; i < model.getRowCount(); i++) {
             if (model.getValueAt(i, 5).equals(true)) {
                 // line number, state number, row number to delete
@@ -56,8 +56,8 @@ public class TextProcessor {
         }
 
 
-        // delete unnecessary entries from undoManager
-        for (int i = pairList.size()-1; i >= 0; --i) {
+        // delete unnecessary entries
+        for (int i = pairList.size() - 1; i >= 0; --i) {
             Object[] lineStatePair = pairList.get(i);
             int lineNum = (int) lineStatePair[0];
             int stateNum = (int) lineStatePair[1];
@@ -90,10 +90,51 @@ public class TextProcessor {
         String joined = String.join("\n", lineSeparateArray);
         area.setText(joined);
     }
+
+    public static void Forget(List<List<String>> undoManager, TextEditTable dataTable) {
+
+        // insert/extract the selection information into ArrayList
+        ArrayList<Object[]> pairList = new ArrayList<Object[]>();
+        DefaultTableModel model = dataTable.getModel();
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if (model.getValueAt(i, 5).equals(true)) {
+                // line number, state number, row number to delete
+                pairList.add(new Object[]{model.getValueAt(i, 1), model.getValueAt(i, 2), (Integer) i});
+            }
+        }
+
+        // delete unnecessary entries
+        for (int i = pairList.size() - 1; i >= 0; --i) {
+            Object[] lineStatePair = pairList.get(i);
+            int lineNum = (int) lineStatePair[0];
+            int stateNum = (int) lineStatePair[1];
+            int deleteRowNum = (int) lineStatePair[2];
+            int oldestState = 0;
+            int deleteCounter = 0;
+
+            //St0 St1 St2
+            for (int j = oldestState; j < stateNum; j++) {
+                undoManager.get(lineNum).remove(0);
+                model.removeRow(--deleteRowNum);  //delete one line from the table
+                deleteCounter++;
+            }
+            // decrease state number
+            for (int k = 0; k < model.getRowCount(); k++) {
+                int preLineValue = (Integer) model.getValueAt(k, 1);
+                int preStateValue = (Integer) model.getValueAt(k, 2);
+                if (preLineValue == lineNum) {
+                    model.setValueAt(preStateValue - deleteCounter, k, 2);
+                }
+            }
+
+        }
+    }
+
+    public static void SelectLatest(TextEditTable dataTable) {
+        DefaultTableModel model = dataTable.getModel();
+        for (int i = 0; i < model.getRowCount(); i++) {
+            dataTable.setValueAt(true, i, 5);
+        }
+    }
 }
-
-
-
-
-
 

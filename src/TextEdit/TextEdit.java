@@ -41,7 +41,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
     private static boolean textChanged = false;
     private LocalDateTime lastEditTime = LocalDateTime.now();
     static List<List<String>> undoManager = new ArrayList<List<String>>();
-    private final int WAITTIME = 2000;
+    private final int WAITTIME = 1000;
 
     public TextEdit() {
         run();
@@ -96,13 +96,14 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         forgetJbutton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ;
+                TextProcessor.Forget(undoManager, dataTable);
             }
         });
         forgetAllJbutton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ;
+                TextProcessor.SelectLatest(dataTable);
+                TextProcessor.Forget(undoManager, dataTable);
             }
         });
 
