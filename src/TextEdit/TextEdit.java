@@ -51,6 +51,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
     private static boolean textChanged = false;
     private LocalDateTime lastEditTime = LocalDateTime.now();
     static List<List<String>> undoManager = new ArrayList<List<String>>();
+    private final int WAITTIME = 2000;
 
     public TextEdit() {
         run();
@@ -256,7 +257,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                 return;
             }
             LocalDateTime now = LocalDateTime.now();
-            if (ChronoUnit.MILLIS.between(lastEditTime, now) > 2000) {
+            if (ChronoUnit.MILLIS.between(lastEditTime, now) > WAITTIME) {
                 TextProcessor.LineUpdates(area, undoManager);
                 TextProcessor.Print(undoManager);
                 smartUndoManager.addEdit(nextEdit, prev, next);
