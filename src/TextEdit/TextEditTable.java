@@ -2,7 +2,6 @@ package TextEdit;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +28,12 @@ public class TextEditTable extends JTable {
     @Override
     public Class<?> getColumnClass(int column) {
         switch (column) {
+            case 0:
+                return Integer.class;
+            case 1:
+                return Integer.class;
+            case 2:
+                return Integer.class;
             case 5:
                 return Boolean.class;
             default:
@@ -44,10 +49,11 @@ public class TextEditTable extends JTable {
     @Override
     public void setValueAt(Object aValue, int row, int column) {
         super.setValueAt(aValue, row, column);
-
+        int lineNumSelected = (int) dataModel.getValueAt(row, 1);
         if (column == 5 && aValue.equals(true)) {
             for (int i = 0; i < dataModel.getRowCount(); i++) {
-                if (row != i)
+                int lineNumCurrent = (int) dataModel.getValueAt(i, 1);
+                if ((row != i) && (lineNumCurrent==lineNumSelected))
                     super.setValueAt(false, i, 5);
             }
         }
