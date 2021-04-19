@@ -132,7 +132,7 @@ public final class TextEdit extends JFrame implements ActionListener {
         JMenuItem menuitem_save = new JMenuItem(EnumCommandCaption.SAVE.getCaption());
         JMenuItem menuitem_quit = new JMenuItem(EnumCommandCaption.QUIT.getCaption());
 
-        JMenuItem menuitem_view_last_edits = new JMenuItem(EnumCommandCaption.VIEW_HIDE_LAST_EDIT_HISTORY.getCaption());
+        JMenuItem menuitem_undo_forget_edits = new JMenuItem(EnumCommandCaption.VIEW_HIDE_UNDO_FORGET_EDIT_HISTORY.getCaption());
 
         JMenuItem menuitem_about = new JMenuItem(EnumCommandCaption.ABOUT.getCaption());
 
@@ -141,7 +141,7 @@ public final class TextEdit extends JFrame implements ActionListener {
         menuitem_save.addActionListener(this);
         menuitem_quit.addActionListener(this);
 
-        menuitem_view_last_edits.addActionListener(this);
+        menuitem_undo_forget_edits.addActionListener(this);
 
         menuitem_about.addActionListener(this);
 
@@ -154,7 +154,7 @@ public final class TextEdit extends JFrame implements ActionListener {
         menu_file.add(menuitem_save);
         menu_file.add(menuitem_quit);
 
-        menu_edit.add(menuitem_view_last_edits);
+        menu_edit.add(menuitem_undo_forget_edits);
 
         menu_help.add(menuitem_about);
 
@@ -255,7 +255,7 @@ public final class TextEdit extends JFrame implements ActionListener {
                 break;
 
 
-            case VIEW_HIDE_LAST_EDIT_HISTORY:
+            case VIEW_HIDE_UNDO_FORGET_EDIT_HISTORY:
 
                 if (tableExist) {
                     gridPanel.remove(dataManagementPanel);
