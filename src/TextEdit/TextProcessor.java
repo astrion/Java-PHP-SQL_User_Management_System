@@ -50,9 +50,13 @@ public class TextProcessor {
         ArrayList<Object[]> pairList = new ArrayList<Object[]>();
         DefaultTableModel model = dataTable.getModel();
         for (int i = 0; i < model.getRowCount(); i++) {
-            if (model.getValueAt(i, 5).equals(true)) {
+            if (model.getValueAt(i, Column.Select.Index()).equals(true)) {
                 // line number, state number, row number to delete
-                pairList.add(new Object[]{model.getValueAt(i, 1), model.getValueAt(i, 2), (Integer) i});
+                pairList.add(new Object[]{
+                        model.getValueAt(i, Column.Line.Index()),
+                        model.getValueAt(i, Column.State.Index()),
+                        (Integer) i
+                });
             }
         }
 
@@ -67,7 +71,7 @@ public class TextProcessor {
                 undoManager.get(lineNum).remove(j);
             }
              //decrease line number
-            if ((stateNum == 0) && (lineNum>0)) {
+            if ((stateNum == 0) && undoManager.get(lineNum).get(stateNum).equals("")) {
                 undoManager.remove(lineNum);
             }
         }
@@ -92,9 +96,13 @@ public class TextProcessor {
         ArrayList<Object[]> pairList = new ArrayList<Object[]>();
         DefaultTableModel model = dataTable.getModel();
         for (int i = 0; i < model.getRowCount(); i++) {
-            if (model.getValueAt(i, 5).equals(true)) {
+            if (model.getValueAt(i, Column.Select.Index()).equals(true)) {
                 // line number, state number, row number to delete
-                pairList.add(new Object[]{model.getValueAt(i, 1), model.getValueAt(i, 2), (Integer) i});
+                pairList.add(new Object[]{
+                        model.getValueAt(i, Column.Line.Index()),
+                        model.getValueAt(i, Column.State.Index()),
+                        (Integer) i
+                });
             }
         }
 
@@ -118,14 +126,14 @@ public class TextProcessor {
     public static void SelectLatest(TextEditTable dataTable) {
         DefaultTableModel model = dataTable.getModel();
         for (int i = 0; i < model.getRowCount(); i++) {
-            dataTable.setValueAt(true, i, 5);
+            dataTable.setValueAt(true, i, Column.Select.Index());
         }
     }
 
     public static void SelectOldest(TextEditTable dataTable) {
         DefaultTableModel model = dataTable.getModel();
         for (int i = model.getRowCount()-1; i >=0; --i) {
-            dataTable.setValueAt(true, i, 5);
+            dataTable.setValueAt(true, i, Column.Select.Index());
         }
     }
 }
