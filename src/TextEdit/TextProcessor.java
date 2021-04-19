@@ -15,6 +15,7 @@ public class TextProcessor {
             // line is new
             if (undoManager.isEmpty() || undoManager.size() <= i) {
                 List<String> currLsit = new ArrayList<String>();
+                currLsit.add(""); // add black state
                 currLsit.add(lines[i]);
                 undoManager.add(currLsit);
             }
@@ -63,12 +64,12 @@ public class TextProcessor {
             int stateNum = (int) lineStatePair[1];
             int deleteRowNum = (int) lineStatePair[2];
             int latestState = (int) undoManager.get(lineNum).size() - 1;
-            for (int j = latestState; j >= stateNum; --j) {
+            for (int j = latestState; j > stateNum; --j) {
                 undoManager.get(lineNum).remove(j);
                 model.removeRow(deleteRowNum);  //delete one line from the table
             }
             // decrease line number
-            if (stateNum == 0) {
+            if ((stateNum == 0) && (lineNum>0)) {
                 undoManager.remove(lineNum);
                 for (int k = 0; k < model.getRowCount(); k++) {
                     int preValue = (Integer) model.getValueAt(k, 1);
@@ -133,6 +134,13 @@ public class TextProcessor {
     public static void SelectLatest(TextEditTable dataTable) {
         DefaultTableModel model = dataTable.getModel();
         for (int i = 0; i < model.getRowCount(); i++) {
+            dataTable.setValueAt(true, i, 5);
+        }
+    }
+
+    public static void SelectOldest(TextEditTable dataTable) {
+        DefaultTableModel model = dataTable.getModel();
+        for (int i = model.getRowCount()-1; i >=0; --i) {
             dataTable.setValueAt(true, i, 5);
         }
     }

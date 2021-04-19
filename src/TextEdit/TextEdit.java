@@ -30,6 +30,7 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
     private static UndoableEdit nextEdit;
     private static UndoableEdit prevEdit;
     private static JButton undoJbutton;
+    private static JButton undoAllJbutton;
     private static JButton forgetJbutton;
     private static JButton forgetAllJbutton;
     private static int returnValue = 0;
@@ -80,9 +81,11 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         dataTableScrollPane = new JScrollPane(dataTable);
         dataButtonPanel = new JPanel();
         undoJbutton = new JButton("Undo");
+        undoAllJbutton = new JButton("Undo All");
         forgetJbutton = new JButton("Forget");
         forgetAllJbutton = new JButton("Forget All");
         dataButtonPanel.add(undoJbutton);
+        dataButtonPanel.add(undoAllJbutton);
         dataButtonPanel.add(forgetJbutton);
         dataButtonPanel.add(forgetAllJbutton);
 
@@ -90,6 +93,13 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         undoJbutton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                TextProcessor.Undo(undoManager, dataTable, area);
+            }
+        });
+        undoAllJbutton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                TextProcessor.SelectOldest(dataTable);
                 TextProcessor.Undo(undoManager, dataTable, area);
             }
         });
