@@ -5,12 +5,15 @@ import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
 import java.util.List;
 
-
+// Processing Texts
 public class TextProcessor {
 
+    // Update historyManager data structure from the provided text
     public static void LineUpdates(JTextArea area, List<List<String>> historyManager) {
+        // Split the provided text using new line character
         String[] lines = area.getText().split("\n");
 
+        // Process line by line
         for (int i = 0; i < lines.length; i++) {
             // if line is new
             if (historyManager.isEmpty() || historyManager.size() <= i) {
@@ -19,12 +22,15 @@ public class TextProcessor {
                 if (!lines[i].equals(""))
                     currList.add("");
                 currList.add(lines[i]);
+                // Append line into the structure
                 historyManager.add(currList);
             }
             // if line is already there
             else {
                 List<String> currLineInUM = historyManager.get(i);
+                // Set current state using latest state
                 String currState = currLineInUM.get(currLineInUM.size() - 1);
+                // Add new line only when line is updated
                 if (!currState.equals(lines[i])) {
                     currLineInUM.add(lines[i]);
                 }
@@ -32,11 +38,10 @@ public class TextProcessor {
         }
     }
 
+    // Print data structure
     public static void Print(List<List<String>> historyManager) {
         System.out.println("#AreaProcessor.Print");
-        //printing
         for (int i = 0; i < historyManager.size(); i++) {
-
             System.out.print("Line: " + (i + 1) + " | ");
             List<String> currLineinUM = historyManager.get(i);
             for (int j = currLineinUM.size() - 1; j >= 0; --j) {
@@ -46,6 +51,7 @@ public class TextProcessor {
         }
     }
 
+    // Perform Undo
     public static void Undo(List<List<String>> historyManager, TextEditTable dataTable, JTextArea area) {
 
         // insert/extract the selection information into ArrayList
