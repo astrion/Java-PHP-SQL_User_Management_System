@@ -14,15 +14,7 @@ public enum EnumCommandCaption {
     QUIT ("Quit"),
 
     EDIT ("Edit"),
-    CLEAR_LAST_EDIT_HISTORY("Clear last-edit history..."),
-    CLEAR_LAST_EDIT_HISTORY_BY_N_STEPS("Clear last-edit history by N steps..."),
-    CLEAR_LAST_EDIT_HISTORY_BY_ELAPSED_TIME("Clear last-edit history by elapsed time..."),
-    REDO ("Redo"),
-    UNDO ("Undo"),
-    UNDO_SEQUENTIALLY_BY_N_STEPS("Undo last edits sequentially by N steps..."),
-    UNDO_SEQUENTIALLY_BY_ELAPSED_TIME("Undo last edits sequentially by elapsed time..."),
-    UNDO_BY_ANY_ORDER("Undo last edits by any order..."),
-    VIEW_HIDE_LAST_EDIT_HISTORY("View/Hide last-edit history..."),
+    VIEW_HIDE_UNDO_FORGET_EDIT_HISTORY("View/Hide Edit History..."),
 
     HELP ("Help"),
     ABOUT ("About");
