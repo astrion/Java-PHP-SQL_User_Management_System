@@ -62,22 +62,13 @@ public class TextProcessor {
             Object[] lineStatePair = pairList.get(i);
             int lineNum = (int) lineStatePair[0];
             int stateNum = (int) lineStatePair[1];
-            int deleteRowNum = (int) lineStatePair[2];
             int latestState = (int) undoManager.get(lineNum).size() - 1;
             for (int j = latestState; j > stateNum; --j) {
                 undoManager.get(lineNum).remove(j);
-                model.removeRow(deleteRowNum);  //delete one line from the table
             }
-            // decrease line number
+             //decrease line number
             if ((stateNum == 0) && (lineNum>0)) {
                 undoManager.remove(lineNum);
-                for (int k = 0; k < model.getRowCount(); k++) {
-                    int preValue = (Integer) model.getValueAt(k, 1);
-                    if (preValue > lineNum) {
-                        model.setValueAt(preValue - 1, k, 1);
-                    }
-
-                }
             }
         }
 
@@ -90,6 +81,9 @@ public class TextProcessor {
         String[] lineSeparateArray = s.toArray(new String[s.size()]);
         String joined = String.join("\n", lineSeparateArray);
         area.setText(joined);
+
+        //data refresh
+        dataTable.Refresh(undoManager);
     }
 
     public static void Forget(List<List<String>> undoManager, TextEditTable dataTable) {
@@ -109,26 +103,16 @@ public class TextProcessor {
             Object[] lineStatePair = pairList.get(i);
             int lineNum = (int) lineStatePair[0];
             int stateNum = (int) lineStatePair[1];
-            int deleteRowNum = (int) lineStatePair[2];
             int oldestState = 0;
-            int deleteCounter = 0;
 
-            //St0 St1 St2
             for (int j = oldestState; j < stateNum; j++) {
                 undoManager.get(lineNum).remove(0);
-                model.removeRow(--deleteRowNum);  //delete one line from the table
-                deleteCounter++;
             }
             // decrease state number
-            for (int k = 0; k < model.getRowCount(); k++) {
-                int preLineValue = (Integer) model.getValueAt(k, 1);
-                int preStateValue = (Integer) model.getValueAt(k, 2);
-                if (preLineValue == lineNum) {
-                    model.setValueAt(preStateValue - deleteCounter, k, 2);
-                }
-            }
 
         }
+        //data refresh
+        dataTable.Refresh(undoManager);
     }
 
     public static void SelectLatest(TextEditTable dataTable) {
