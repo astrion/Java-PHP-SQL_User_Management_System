@@ -15,7 +15,8 @@ public class TextProcessor {
             // line is new
             if (undoManager.isEmpty() || undoManager.size() <= i) {
                 List<String> currLsit = new ArrayList<String>();
-                currLsit.add(""); // add black state
+                if (!lines[i].equals(""))
+                    currLsit.add(""); // add black state when new line is not blank
                 currLsit.add(lines[i]);
                 undoManager.add(currLsit);
             }

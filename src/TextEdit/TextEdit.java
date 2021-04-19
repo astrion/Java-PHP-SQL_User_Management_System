@@ -4,7 +4,6 @@ import javax.swing.*;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileSystemView;
-import javax.swing.undo.UndoableEdit;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,27 +16,21 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public final class TextEdit extends JFrame implements ActionListener, TextProcessing, SecondaryUIComponents {
+public final class TextEdit extends JFrame implements ActionListener {
     private static JTextArea area;
     private static JFrame frame;
     private static JScrollPane dataTableScrollPane;
     private static JPanel dataManagementPanel;
     private static JPanel dataButtonPanel;
     private static JPanel gridPanel;
-    private static JTabbedPane undoForgetTabbedPane;
     private static Boolean tableExist = false;
     private static TextEditTable dataTable;
-    private static UndoableEdit nextEdit;
-    private static UndoableEdit prevEdit;
     private static JButton undoJbutton;
     private static JButton undoAllJbutton;
     private static JButton forgetJbutton;
     private static JButton forgetAllJbutton;
     private static int returnValue = 0;
     private final String DEFAULT_TEXT = "";
-    private String prev = DEFAULT_TEXT;
-    private String next = DEFAULT_TEXT;
-    private SmartUndoManager smartUndoManager = new SmartUndoManager();
     private Timer timer;
     private static boolean textChanged = false;
     private LocalDateTime lastEditTime = LocalDateTime.now();
@@ -139,12 +132,6 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         JMenuItem menuitem_save = new JMenuItem(EnumCommandCaption.SAVE.getCaption());
         JMenuItem menuitem_quit = new JMenuItem(EnumCommandCaption.QUIT.getCaption());
 
-        JMenuItem menuitem_clear_edit_history = new JMenuItem(EnumCommandCaption.CLEAR_LAST_EDIT_HISTORY.getCaption());
-        JMenuItem menuitem_clear_edit_history_by_n_steps = new JMenuItem(EnumCommandCaption.CLEAR_LAST_EDIT_HISTORY_BY_N_STEPS.getCaption());
-        JMenuItem menuitem_clear_edit_history_by_elapsed_Time = new JMenuItem(EnumCommandCaption.CLEAR_LAST_EDIT_HISTORY_BY_ELAPSED_TIME.getCaption());
-        JMenuItem menuitem_undo_by_n_steps = new JMenuItem(EnumCommandCaption.UNDO_SEQUENTIALLY_BY_N_STEPS.getCaption());
-        JMenuItem menuitem_undo_by_elapsed_time = new JMenuItem(EnumCommandCaption.UNDO_SEQUENTIALLY_BY_ELAPSED_TIME.getCaption());
-        JMenuItem menuitem_undo_by_any_order = new JMenuItem(EnumCommandCaption.UNDO_BY_ANY_ORDER.getCaption());
         JMenuItem menuitem_view_last_edits = new JMenuItem(EnumCommandCaption.VIEW_HIDE_LAST_EDIT_HISTORY.getCaption());
 
         JMenuItem menuitem_about = new JMenuItem(EnumCommandCaption.ABOUT.getCaption());
@@ -154,12 +141,6 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         menuitem_save.addActionListener(this);
         menuitem_quit.addActionListener(this);
 
-        menuitem_clear_edit_history.addActionListener(this);
-        menuitem_clear_edit_history_by_n_steps.addActionListener(this);
-        menuitem_clear_edit_history_by_elapsed_Time.addActionListener(this);
-        menuitem_undo_by_n_steps.addActionListener(this);
-        menuitem_undo_by_elapsed_time.addActionListener(this);
-        menuitem_undo_by_any_order.addActionListener(this);
         menuitem_view_last_edits.addActionListener(this);
 
         menuitem_about.addActionListener(this);
@@ -173,13 +154,6 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
         menu_file.add(menuitem_save);
         menu_file.add(menuitem_quit);
 
-        menu_edit.add(menuitem_clear_edit_history);
-        menu_edit.add(menuitem_clear_edit_history_by_n_steps);
-        menu_edit.add(menuitem_clear_edit_history_by_elapsed_Time);
-
-        menu_edit.add(menuitem_undo_by_n_steps);
-        menu_edit.add(menuitem_undo_by_elapsed_time);
-        menu_edit.add(menuitem_undo_by_any_order);
         menu_edit.add(menuitem_view_last_edits);
 
         menu_help.add(menuitem_about);
@@ -199,7 +173,6 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                 }
         );
     }
-    List<List<Integer>> prevLastState = new ArrayList<List<Integer>>();// keeps thack of states in Table
 
 
     class Trigger extends TimerTask {
@@ -233,12 +206,15 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
 
             case NEW:
 
+                undoManager.clear();
+                dataTable.Refresh(undoManager);
                 area.setText(DEFAULT_TEXT);
-                prev = area.getText();
                 break;
 
             case OPEN:
 
+                undoManager.clear();
+                dataTable.Refresh(undoManager);
                 returnValue = jfc.showOpenDialog(null);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File f = new File(jfc.getSelectedFile().getAbsolutePath());
@@ -250,7 +226,6 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                             ingest = ingest + line;
                         }
                         area.setText(ingest);
-                        prev = area.getText();
                     } catch (FileNotFoundException ex) {
                         ex.printStackTrace();
                     }
@@ -279,109 +254,6 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                 System.exit(0);
                 break;
 
-            case CLEAR_LAST_EDIT_HISTORY:
-
-                // clear all edits
-                this.smartUndoManager.clear();
-                updateLastEditView(this.smartUndoManager.lastEdits);
-                break;
-
-            case CLEAR_LAST_EDIT_HISTORY_BY_N_STEPS:
-
-                // TODO: ..
-                break;
-
-            case CLEAR_LAST_EDIT_HISTORY_BY_ELAPSED_TIME:
-
-                // TODO: ...
-                break;
-
-            case REDO:
-
-                // TODO: (OPTIONAL) review, and if possible, add an extra adjustment for multiple edits
-                // NOTE: a simple redo would work as this
-
-
-                this.smartUndoManager.redo();
-
-                // update view
-                updateLastEditView(this.smartUndoManager.lastEdits);
-
-                break;
-
-            case UNDO:
-
-                // NOTE: a simple undo would work as this:
-
-                /*
-                if (undoManager.canUndo()) {
-                    undoManager.undo();
-                    next = area.getText();
-                    System.out.println("applied undo");
-                } else
-                    System.out.println("cannot undo");
-                 */
-
-                // but, it the same as this with N=1
-                //this.smartUndoManager.undoMultipleNToLastEdits(1);
-                this.smartUndoManager.undo();
-
-                // update view
-                updateLastEditView(this.smartUndoManager.lastEdits);
-
-                break;
-
-            case UNDO_SEQUENTIALLY_BY_N_STEPS:
-
-                int steps;
-                try {
-                    steps = Integer.parseInt(getUserInput(
-                            frame,
-                            "To undo latest edits, please specify how many of them below:",
-                            "1"
-                    ));
-                } catch (NumberFormatException ex) {
-                    ex.printStackTrace();
-                    steps = 0;
-                }
-                this.smartUndoManager.undoMultipleNToLastEdits(steps);
-
-                // update view
-                updateLastEditView(this.smartUndoManager.lastEdits);
-
-                break;
-
-            case UNDO_SEQUENTIALLY_BY_ELAPSED_TIME:
-
-                double seconds;
-                try {
-                    seconds = Double.parseDouble(getUserInput(
-                            frame,
-                            "To undo recent edits, please specify a time span (in seconds) below:",
-                            "5"
-                    ));
-                } catch (NumberFormatException ex) {
-                    ex.printStackTrace();
-                    seconds = 0.0;
-
-                }
-                int expectedSteps = this.smartUndoManager.getStepsToUndoInLatestSeconds(seconds);
-                this.smartUndoManager.undoMultipleNToLastEdits(expectedSteps);
-
-                // update view
-                updateLastEditView(this.smartUndoManager.lastEdits);
-
-                break;
-
-            case UNDO_BY_ANY_ORDER:
-
-                // TODO: implement or remove
-                String input = getUserInput(
-                        frame,
-                        "To undo recent edits, please list them below (e.g. 7,35):",
-                        null);
-                System.out.println("TODO: implement any-order undo... (user entered:" + input + ")");
-                break;
 
             case VIEW_HIDE_LAST_EDIT_HISTORY:
 
