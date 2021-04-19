@@ -70,8 +70,8 @@ public class TextProcessor {
             for (int j = latestState; j > stateNum; --j) {
                 undoManager.get(lineNum).remove(j);
             }
-             //decrease line number
-            if ((stateNum == 0) && undoManager.get(lineNum).get(stateNum).equals("")) {
+            //decrease line number
+            if ((stateNum == 0) && undoManager.get(lineNum).get(stateNum).equals("") && lineNum>0) {
                 undoManager.remove(lineNum);
             }
         }
@@ -132,7 +132,7 @@ public class TextProcessor {
 
     public static void SelectOldest(TextEditTable dataTable) {
         DefaultTableModel model = dataTable.getModel();
-        for (int i = model.getRowCount()-1; i >=0; --i) {
+        for (int i = model.getRowCount() - 1; i >= 0; --i) {
             dataTable.setValueAt(true, i, Column.Select.Index());
         }
     }

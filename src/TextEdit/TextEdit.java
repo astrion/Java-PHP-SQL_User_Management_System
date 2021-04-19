@@ -193,41 +193,19 @@ public final class TextEdit extends JFrame implements ActionListener, TextProces
                     @Override
                     public void undoableEditHappened(UndoableEditEvent e) {
                         // get one character from UndoableEditEvent
-                        nextEdit = e.getEdit();
-                        if (prevEdit == null) {
-                            prevEdit = nextEdit;
-                        }
-
-                        // following block is to handle when the previous mode (insert, delete) does not match with the
-                        // next mode.
-                        if (!prevEdit.getPresentationName().equals(nextEdit.getPresentationName())) {
-                            //call grouping when insert <-->delete changes
-                            smartUndoManager.addEdit(prevEdit, prev, next);
-
-                            // update prev
-                            prev = next;
-                            textChanged = false;
-                        }
-                        // accumulate editable events
-                        smartUndoManager.undoManager.undoableEditHappened(e);
-
-                        // update next
-                        next = area.getText();
                         lastEditTime = LocalDateTime.now();
                         textChanged = true;
-                        prevEdit = nextEdit;
                     }
                 }
         );
     }
-
     List<List<Integer>> prevLastState = new ArrayList<List<Integer>>();// keeps thack of states in Table
 
 
     class Trigger extends TimerTask {
         public void run() {
             // When no undoable event exists, then ignore the timer event
-            if (nextEdit == null || !textChanged) {
+            if (!textChanged) {
                 return;
             }
             LocalDateTime now = LocalDateTime.now();
