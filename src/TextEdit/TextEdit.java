@@ -17,14 +17,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public final class TextEdit extends JFrame implements ActionListener {
-    private static JTextArea area;
+    private static JTextArea textArea;
     private static JFrame frame;
-    private static JScrollPane dataTableScrollPane;
-    private static JPanel dataManagementPanel;
-    private static JPanel dataButtonPanel;
+    private static JScrollPane historyTableScrollPane;
+    private static JPanel historyManagementPanel;
+    private static JPanel undoforgetButtonPanel;
     private static JPanel gridPanel;
     private static Boolean tableExist = false;
-    private static TextEditTable dataTable;
+    private static TextEditTable historyTable;
     private static JButton undoJButton;
     private static JButton undoAllJButton;
     private static JButton forgetJButton;
@@ -34,7 +34,7 @@ public final class TextEdit extends JFrame implements ActionListener {
     private Timer timer;
     private static boolean textChanged = false;
     private LocalDateTime lastEditTime = LocalDateTime.now();
-    static List<List<String>> undoManager = new ArrayList<List<String>>();
+    static List<List<String>> historyManager = new ArrayList<List<String>>();
     private final int WAITTIME = 1000;
 
     public TextEdit() {
@@ -42,10 +42,24 @@ public final class TextEdit extends JFrame implements ActionListener {
     }
 
     public void run() {
+        // Set timer to run every 500ms. For a proper operation, 1000ms delay on start is added
         timer = new Timer();
         timer.schedule(new Trigger(), 1000, 500);
 
-        frame = new JFrame(EnumWindowCaption.PRIMARY.caption);
+        //                    ********** UI Structure **********
+        //|----------------------------------Frame------------------------------|
+        //|  |====================GridPanel (row:2 column:1)================|   |
+        //|  |  |------JScrollPane--------|    |----------JPanel--------|   |   |
+        //|  |  |    |---JTextArea----|   |    |  |---JScrollPane---|   |   |   |
+        //|  |  |    |                |   |    |  |  TextEditTable  |   |   |   |
+        //|  |  |    |----------------|   |    |------------------------|   |   |
+        //|  |  |-------------------------|    |  |------JPanel-----|   |   |   |
+        //|  |                                 |  |   JButtons x 4  |   |   |   |
+        //|  |                                 |------------------------|   |   |
+        //|  |==============================================================|   |
+        //|---------------------------------------------------------------------|
+
+
 
         // Set the look-and-feel (LNF) of the application
         // Try to default to whatever the host system prefers
@@ -57,62 +71,70 @@ public final class TextEdit extends JFrame implements ActionListener {
 
         // TextArea
         // Set attributes of the app window
-        area = new JTextArea();
-        area.setLineWrap(true);
+        textArea = new JTextArea();
+        textArea.setLineWrap(true);
 
+        // The DefaultTableModel supports addRow method to update its contents
+        historyTable = new TextEditTable(new Object[][]{});
 
-        // The DefultTableModel supports addRow method to update its contents
-        dataTable = new TextEditTable(new Object[][]{});
-
+        frame = new JFrame(EnumWindowCaption.PRIMARY.caption);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
         frame.setSize(640, 480);
-        frame.setVisible(true);
 
         // Put text area into scroll pane to enable scrolling feature
-        JScrollPane textScrollPane = new JScrollPane(area);
-        dataTableScrollPane = new JScrollPane(dataTable);
-        dataButtonPanel = new JPanel();
+        JScrollPane textScrollPane = new JScrollPane(textArea);
+        // Put  history(undo) management table into scrollable pane
+        historyTableScrollPane = new JScrollPane(historyTable);
+
+        // Create JButtons for undo, undo all, forget, and forget all
         undoJButton = new JButton("Undo");
         undoAllJButton = new JButton("Undo All");
         forgetJButton = new JButton("Forget");
         forgetAllJButton = new JButton("Forget All");
-        dataButtonPanel.add(undoJButton);
-        dataButtonPanel.add(undoAllJButton);
-        dataButtonPanel.add(forgetJButton);
-        dataButtonPanel.add(forgetAllJButton);
+        // Create new panel for undoforget buttons
+        undoforgetButtonPanel = new JPanel();
+        undoforgetButtonPanel.add(undoJButton);
+        undoforgetButtonPanel.add(undoAllJButton);
+        undoforgetButtonPanel.add(forgetJButton);
+        undoforgetButtonPanel.add(forgetAllJButton);
 
         // Add actions for buttons
+        // Perform undo for selected items
         undoJButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                TextProcessor.Undo(undoManager, dataTable, area);
+
+                TextProcessor.Undo(historyManager, historyTable, textArea);
             }
         });
+        // Perform undoALL for selected (oldest from history) items
         undoAllJButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                TextProcessor.SelectOldest(dataTable);
-                TextProcessor.Undo(undoManager, dataTable, area);
+                TextProcessor.SelectOldest(historyTable);
+                TextProcessor.Undo(historyManager, historyTable, textArea);
             }
         });
+        // Perform forget for selected items
         forgetJButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                TextProcessor.Forget(undoManager, dataTable);
+                TextProcessor.Forget(historyManager, historyTable);
             }
         });
+        // Perform forgetALL for selected (newest from history) items
         forgetAllJButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                TextProcessor.SelectLatest(dataTable);
-                TextProcessor.Forget(undoManager, dataTable);
+                TextProcessor.SelectLatest(historyTable);
+                TextProcessor.Forget(historyManager, historyTable);
             }
         });
 
-        dataManagementPanel = new JPanel(new GridLayout(2, 1));
-        dataManagementPanel.add(dataTableScrollPane);
-        dataManagementPanel.add(dataButtonPanel);
+        // Add GridLayout to have history table scroll pane and undo forget button panel
+        historyManagementPanel = new JPanel(new GridLayout(2, 1));
+        historyManagementPanel.add(historyTableScrollPane);
+        historyManagementPanel.add(undoforgetButtonPanel);
 
         // Set GridPanel and add Text Scroll Pane into left, and Table Scroll Pane into right
         gridPanel = new JPanel(new GridLayout(1, 2));
@@ -155,14 +177,14 @@ public final class TextEdit extends JFrame implements ActionListener {
         menu_file.add(menuitem_quit);
 
         menu_edit.add(menuitem_undo_forget_edits);
-
         menu_help.add(menuitem_about);
 
+        // Set menus into frame and make it visible
         frame.setJMenuBar(menu_main);
         frame.setVisible(true);
 
-
-        area.getDocument().addUndoableEditListener(
+        // When key is typed, then record current time and set textChange flag for checking idle period (1sec)
+        textArea.getDocument().addUndoableEditListener(
                 new UndoableEditListener() {
                     @Override
                     public void undoableEditHappened(UndoableEditEvent e) {
@@ -174,7 +196,7 @@ public final class TextEdit extends JFrame implements ActionListener {
         );
     }
 
-
+    // This block runs every 1000ms to check key type idle status
     class Trigger extends TimerTask {
         public void run() {
             // When no undoable event exists, then ignore the timer event
@@ -182,17 +204,20 @@ public final class TextEdit extends JFrame implements ActionListener {
                 return;
             }
             LocalDateTime now = LocalDateTime.now();
+            // Compare currnt time with the latest user input time to 1000ms idling
             if (ChronoUnit.MILLIS.between(lastEditTime, now) > WAITTIME) {
-                TextProcessor.LineUpdates(area, undoManager);
-                TextProcessor.Print(undoManager);
-
-                dataTable.Refresh(undoManager);
+                // Update historyManager data structure from text area
+                TextProcessor.LineUpdates(textArea, historyManager);
+//                TextProcessor.Print(historyManager);
+                // Refresh table using new data
+                historyTable.Refresh(historyManager);
+                // Set flag for timer operation
                 textChanged = false;
-
             }
         }
     }
 
+    // Define operation for user menu selection
     @Override
     public void actionPerformed(ActionEvent e) {
         String ingest = DEFAULT_TEXT;
@@ -206,15 +231,15 @@ public final class TextEdit extends JFrame implements ActionListener {
 
             case NEW:
 
-                undoManager.clear();
-                dataTable.Refresh(undoManager);
-                area.setText(DEFAULT_TEXT);
+                historyManager.clear();
+                historyTable.Refresh(historyManager);
+                textArea.setText(DEFAULT_TEXT);
                 break;
 
             case OPEN:
 
-                undoManager.clear();
-                dataTable.Refresh(undoManager);
+                historyManager.clear();
+                historyTable.Refresh(historyManager);
                 returnValue = jfc.showOpenDialog(null);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File f = new File(jfc.getSelectedFile().getAbsolutePath());
@@ -225,7 +250,7 @@ public final class TextEdit extends JFrame implements ActionListener {
                             String line = scan.nextLine() + "\n";
                             ingest = ingest + line;
                         }
-                        area.setText(ingest);
+                        textArea.setText(ingest);
                     } catch (FileNotFoundException ex) {
                         ex.printStackTrace();
                     }
@@ -238,7 +263,7 @@ public final class TextEdit extends JFrame implements ActionListener {
                 try {
                     File f = new File(jfc.getSelectedFile().getAbsolutePath());
                     FileWriter out = new FileWriter(f);
-                    out.write(area.getText());
+                    out.write(textArea.getText());
                     out.close();
                 } catch (FileNotFoundException ex) {
                     Component f = null;
@@ -256,13 +281,14 @@ public final class TextEdit extends JFrame implements ActionListener {
 
 
             case VIEW_HIDE_UNDO_FORGET_EDIT_HISTORY:
-
+                // toggle (show and hide) history management table
                 if (tableExist) {
-                    gridPanel.remove(dataManagementPanel);
+                    gridPanel.remove(historyManagementPanel);
                 } else {
-                    gridPanel.add(dataManagementPanel);
+                    gridPanel.add(historyManagementPanel);
                 }
                 tableExist = !tableExist;
+                // Set it visible to refresh frame
                 frame.setVisible(true);
                 break;
 
