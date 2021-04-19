@@ -25,10 +25,10 @@ public final class TextEdit extends JFrame implements ActionListener {
     private static JPanel gridPanel;
     private static Boolean tableExist = false;
     private static TextEditTable dataTable;
-    private static JButton undoJbutton;
-    private static JButton undoAllJbutton;
-    private static JButton forgetJbutton;
-    private static JButton forgetAllJbutton;
+    private static JButton undoJButton;
+    private static JButton undoAllJButton;
+    private static JButton forgetJButton;
+    private static JButton forgetAllJButton;
     private static int returnValue = 0;
     private final String DEFAULT_TEXT = "";
     private Timer timer;
@@ -73,36 +73,36 @@ public final class TextEdit extends JFrame implements ActionListener {
         JScrollPane textScrollPane = new JScrollPane(area);
         dataTableScrollPane = new JScrollPane(dataTable);
         dataButtonPanel = new JPanel();
-        undoJbutton = new JButton("Undo");
-        undoAllJbutton = new JButton("Undo All");
-        forgetJbutton = new JButton("Forget");
-        forgetAllJbutton = new JButton("Forget All");
-        dataButtonPanel.add(undoJbutton);
-        dataButtonPanel.add(undoAllJbutton);
-        dataButtonPanel.add(forgetJbutton);
-        dataButtonPanel.add(forgetAllJbutton);
+        undoJButton = new JButton("Undo");
+        undoAllJButton = new JButton("Undo All");
+        forgetJButton = new JButton("Forget");
+        forgetAllJButton = new JButton("Forget All");
+        dataButtonPanel.add(undoJButton);
+        dataButtonPanel.add(undoAllJButton);
+        dataButtonPanel.add(forgetJButton);
+        dataButtonPanel.add(forgetAllJButton);
 
         // Add actions for buttons
-        undoJbutton.addActionListener(new ActionListener() {
+        undoJButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 TextProcessor.Undo(undoManager, dataTable, area);
             }
         });
-        undoAllJbutton.addActionListener(new ActionListener() {
+        undoAllJButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 TextProcessor.SelectOldest(dataTable);
                 TextProcessor.Undo(undoManager, dataTable, area);
             }
         });
-        forgetJbutton.addActionListener(new ActionListener() {
+        forgetJButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 TextProcessor.Forget(undoManager, dataTable);
             }
         });
-        forgetAllJbutton.addActionListener(new ActionListener() {
+        forgetAllJButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 TextProcessor.SelectLatest(dataTable);
