@@ -10,9 +10,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-enum Column {
-    Line, State, Text, Select;
 
+// create an enum to manage table culumn headers
+enum Column {
+
+    // it has line state text and select
+    Line, State, Text, Select;
+    // based on the selection, this enum returns the matched value
     public int Index() {
         switch (this) {
             case Line:
@@ -28,20 +32,21 @@ enum Column {
         }
     }
 }
-
+// TextEditTable (historyManager table) class is used to manage undo / forget history
 public class TextEditTable extends JTable {
     public TextEditTable(final Object[][] rowData) {
         super(new DefaultTableModel(rowData, columnNames()));
+        // disable request focus visual effect
         setRequestFocusEnabled(false);
-
+        // change from checkbox buttons to radio buttons
         restyleUI();
     }
 
     // RadioButton restyling from Checkbox to RadioButton
     private void restyleUI() {
-        TableColumn forgetTableColumn = getColumnModel().getColumn(Column.Select.Index());
-        forgetTableColumn.setCellEditor(new RadioButtonCellEditorRenderer());
-        forgetTableColumn.setCellRenderer(new RadioButtonCellEditorRenderer());
+        TableColumn historyTableColumn = getColumnModel().getColumn(Column.Select.Index());
+        historyTableColumn.setCellEditor(new RadioButtonCellEditorRenderer());
+        historyTableColumn.setCellRenderer(new RadioButtonCellEditorRenderer());
     }
 
     static String[] columnNames() {
@@ -57,30 +62,38 @@ public class TextEditTable extends JTable {
     public Class<?> getColumnClass(int column) {
         switch (column) {
             case 0:
-                return Integer.class;
+                return Integer.class; // line
             case 1:
-                return Integer.class;
+                return Integer.class; // state
             case 3:
-                return Boolean.class;
+                return Boolean.class; // text
             default:
-                return String.class;
+                return String.class; // select
         }
     }
 
-    // disable editing, the editing is only allowed for set selection
+    // disable editing, the editing is only allowed for set selection column
     @Override
     public boolean isCellEditable(int row, int column) {
         return column == Column.Select.Index();
     }
 
+    // unselect all other states within the same line group expect the state currently selected
     @Override
     public void setValueAt(Object aValue, int row, int column) {
         super.setValueAt(aValue, row, column);
+        // get selected line number
         int lineNumSelected = (int) dataModel.getValueAt(row, Column.Line.Index());
+        // when selected column is 'set' column and the value is true (meaning it is selected)
         if (column == Column.Select.Index() && aValue.equals(true)) {
+            // iterate through the table to deselect other lines in the same line number group
             for (int i = 0; i < dataModel.getRowCount(); i++) {
+                // get the line number info
                 int lineNumCurrent = (int) dataModel.getValueAt(i, Column.Line.Index());
+                // current selection is not the line selected by user, and line number matches
+                // this means other states of the same line
                 if ((row != i) && (lineNumCurrent == lineNumSelected))
+                    // then deselect the state
                     super.setValueAt(false, i, Column.Select.Index());
             }
         }
@@ -103,6 +116,7 @@ public class TextEditTable extends JTable {
         return columns;
     }
 
+
     public void addRow(String description, int line, int state) {
         DefaultTableModel model = getModel();
         Object[] columns = newColumns(model.getRowCount(), description, line, state);
@@ -118,7 +132,7 @@ public class TextEditTable extends JTable {
     }
 
 
-    // add rows
+    // refersh (sync) the table using the information in the data structure
     public void Refresh(List<List<String>> editHistory) {
         DefaultTableModel model = new DefaultTableModel(new Object[][]{}, columnNames());
         setModel(model);
