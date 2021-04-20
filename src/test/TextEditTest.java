@@ -11,11 +11,14 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 
 public class TextEditTest {
+
+    TextEdit textEdit = new TextEdit();
 
     class TestActionEventObject extends ActionEvent {
         public TestActionEventObject(Object source, int id, String command) {
@@ -39,25 +42,12 @@ public class TextEditTest {
 
     @Test
     void test_TextEdit_TextEdit() {
-        TextEdit textEdit = new TextEdit();
-        assertTrue(textEdit != null);
+        assertTrue(new TextEdit() != null);
     }
 
     @Test
     void test_TextEdit_run() {
-        TextEdit textEdit = new TextEdit();
-
-        boolean isMethodExecutedWithoutInterruptions;
-        try {
-
-            // test run() here
-            textEdit.run();
-
-            isMethodExecutedWithoutInterruptions = true;
-        } catch (Exception e) {
-            isMethodExecutedWithoutInterruptions = false;
-        }
-        assertTrue(isMethodExecutedWithoutInterruptions);
+        assertAll(() -> textEdit.run());
     }
 
 
@@ -77,21 +67,10 @@ public class TextEditTest {
             return;
 
         // NOTE: for demonstration purposes, test all remaining commands
-        TextEdit textEdit = new TextEdit();
-        boolean isMethodExecutedWithoutInterruptions;
-        try {
-            TestActionEventObject actionEvent = new TestActionEventObject(
-                    getTestSource(), -1, command.getCaption()
-            );
-
-            // test actionPerformed() here
-            textEdit.actionPerformed(actionEvent);
-
-            isMethodExecutedWithoutInterruptions = true;
-        } catch (Exception e) {
-            isMethodExecutedWithoutInterruptions = false;
-        }
-        assertTrue(isMethodExecutedWithoutInterruptions);
+        TestActionEventObject testActionEvent = new TestActionEventObject(
+                getTestSource(), -1, command.getCaption()
+        );
+        assertAll(() -> textEdit.actionPerformed(testActionEvent));
     }
 
 }
