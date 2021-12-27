@@ -1,5 +1,5 @@
 --------------
-SMARTY PROJECT
+SMARTY PROJECT - As a part of COMP 5541 Files and Databases course in Concordia University
 --------------
 
 # HOW TO SETUP A LOCAL BRANCH, COMMIT CHANGES, SETUP A REMOTE BRANCH, AND MAKE A PULL REQUEST
@@ -7,8 +7,9 @@ SMARTY PROJECT
 # set a local clone of master in shared repo
 mkdir REPOS
 cd REPOS
-git clone -b master https://github.com/astrion/Concordia_COMP5541_Winter2021.git
-cd Concordia_COMP5541_Winter2021
+
+git clone -b master https://github.com/astrion/Smarty_Java-PHP-SQL-based-User-Subscription-Management-System.git
+cd Smarty_Java-PHP-SQL-based-User-Subscription-Management-System
 
 # get the latest branch info and check branches
 git fetch
@@ -46,5 +47,5 @@ git push origin my_branch
 
 # HOW TO RUN UNIT TESTS
 1. Open IntelliJ
-2. Right-click on Concordia_COMP5541_Winter2021/src/test
+2. Right-click on Smarty_Java-PHP-SQL-based-User-Subscription-Management-System/src/test
 3. Left-click on'Run 'Tests in 'test''
