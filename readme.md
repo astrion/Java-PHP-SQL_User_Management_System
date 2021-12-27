@@ -2,6 +2,13 @@
 SMARTY PROJECT - As a part of COMP 5541 Files and Databases course in Concordia University
 --------------
 
+
+Smarty is a text editor with undo, redo, undo all, redo all. This program is created to learn Java GUI programming and data structure management.
+
+The below is a sample page with Lorem Ipsum.
+
+![Smarty text editor is being displayed with Lorem Ipsum](smarty.png "Smarty Text Editor")
+
 # HOW TO SETUP A LOCAL BRANCH, COMMIT CHANGES, SETUP A REMOTE BRANCH, AND MAKE A PULL REQUEST
 
 # set a local clone of master in shared repo
