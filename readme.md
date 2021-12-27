@@ -1,5 +1,5 @@
 --------------
-SMARTY PROJECT - As a part of COMP 5541 Files and Databases course in Concordia University
+SMARTY PROJECT - As a part of COMP 5541 Tools and Techniques for Software Engineering course in Concordia University
 --------------
 
 
